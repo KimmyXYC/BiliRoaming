@@ -41,10 +41,9 @@ private fun GeneratedMessageLite<*, *>.print(indent: Int = 0): String {
         if (f.isStatic) continue
         f.isAccessible = true
         val v = f.get(this)
-        val name = StringBuffer().run {
+        val name = buildString {
             for (i in 0 until indent) append('\t')
             append(f.name.substringBeforeLast("_"), ": ")
-            toString()
         }
         when (v) {
             is GeneratedMessageLite<*, *> -> {
@@ -74,7 +73,7 @@ private fun GeneratedMessageLite<*, *>.print(indent: Int = 0): String {
     return sb.toString()
 }
 
-class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContext: Context) {
+class BiliBiliPackage(private val mClassLoader: ClassLoader, mContext: Context) {
     init {
         instance = this
     }
@@ -160,6 +159,15 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
     val playerOnSeekCompleteClass by Weak { mHookInfo.playerCoreService.seekCompleteListener from mClassLoader }
     val kanbanCallbackClass by Weak { mHookInfo.kanBan.class_ from mClassLoader }
     val toastHelperClass by Weak { mHookInfo.toastHelper.class_ from mClassLoader }
+    val updaterOptionsClass by Weak { mHookInfo.appUpgrade.updaterOptions from mClassLoader }
+    val upgradeApiMethod get() = mHookInfo.appUpgrade.upgradeApi.orNull
+    val upgradeUtilsClass by Weak { mHookInfo.appUpgrade.upgradeUtils from mClassLoader }
+    val writeChannelMethod get() = mHookInfo.appUpgrade.writeChannel.orNull
+    val helpFragmentClass by Weak { mHookInfo.appUpgrade.helpFragment from mClassLoader }
+    val userFragmentClass by Weak { mHookInfo.darkSwitch.userFragment from mClassLoader }
+    val themeUtilsClass by Weak { mHookInfo.darkSwitch.themeUtils from mClassLoader }
+    val switchDarkModeMethod get() = mHookInfo.darkSwitch.switchDarkMode.orNull
+    val isDarkFollowSystemMethod get() = mHookInfo.darkSwitch.isDarkFollowSystem.orNull
     val videoDetailCallbackClass by Weak { mHookInfo.videoDetailCallback from mClassLoader }
     val biliAccountsClass by Weak { mHookInfo.biliAccounts.class_ from mClassLoader }
 
@@ -378,6 +386,123 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
                                 && it.type == Int::class.javaPrimitiveType
                     }
                 }.forEach { ids[it.name] = it.get(null) as Int }
+            }
+            appUpgrade = appUpgrade {
+                val upgradeApiMethod = dexHelper.findMethodUsingString(
+                    "https://app.bilibili.com/x/v2/version/fawkes/upgrade",
+                    false,
+                    -1,
+                    -1,
+                    null,
+                    -1,
+                    null,
+                    null,
+                    null,
+                    true
+                ).map { dexHelper.decodeMethodIndex(it) }
+                    .firstOrNull() ?: return@appUpgrade
+                upgradeApi = method { name = upgradeApiMethod.name }
+                updaterOptions = class_ { name = upgradeApiMethod.declaringClass.name }
+                val writeChannelMethod = dexHelper.findMethodUsingString(
+                    "Channel info has already exist.",
+                    false,
+                    -1,
+                    -1,
+                    null,
+                    -1,
+                    null,
+                    null,
+                    null,
+                    true
+                ).map {
+                    dexHelper.decodeMethodIndex(it)
+                }.firstOrNull() ?: return@appUpgrade
+                writeChannel = method { name = writeChannelMethod.name }
+                upgradeUtils = class_ { name = writeChannelMethod.declaringClass.name }
+                val helpFragmentClass = "com.bilibili.app.preferences.fragment.HelpFragment"
+                    .from(classloader) ?: run {
+                    dexHelper.findMethodUsingString(
+                        "url_join_us",
+                        false,
+                        -1,
+                        -1,
+                        null,
+                        -1,
+                        null,
+                        null,
+                        null,
+                        true
+                    ).map {
+                        dexHelper.decodeMethodIndex(it)
+                    }.firstOrNull()?.declaringClass
+                } ?: return@appUpgrade
+                helpFragment = class_ { name = helpFragmentClass.name }
+            }
+            darkSwitch = darkSwitch {
+                val userFragmentClass = "tv.danmaku.bili.ui.main2.mine.HomeUserCenterFragment"
+                    .from(classloader) ?: run {
+                    dexHelper.findMethodUsingString(
+                        "key_global_link_entrance_shown",
+                        false,
+                        -1,
+                        -1,
+                        null,
+                        -1,
+                        null,
+                        null,
+                        null,
+                        true
+                    ).map {
+                        dexHelper.decodeMethodIndex(it)
+                    }.firstOrNull()?.declaringClass
+                } ?: return@darkSwitch
+                val userFragmentIndex = dexHelper.encodeClassIndex(userFragmentClass)
+                val switchDarkModeIndex = dexHelper.findMethodUsingString(
+                    "default",
+                    false,
+                    -1,
+                    1,
+                    "VZ",
+                    userFragmentIndex,
+                    null,
+                    null,
+                    null,
+                    true
+                ).firstOrNull() ?: return@darkSwitch
+                val switchDarkModeMethod =
+                    dexHelper.decodeMethodIndex(switchDarkModeIndex) ?: return@darkSwitch
+                var isDarkFollowSystemMethod: Method? = null
+                var themeUtilsClass = "com.bilibili.lib.ui.util.MultipleThemeUtils"
+                    .from(classloader)?.also {
+                        isDarkFollowSystemMethod = it.runCatchingOrNull {
+                            getDeclaredMethod("isNightFollowSystem", Context::class.java)
+                        }
+                    }
+                isDarkFollowSystemMethod ?: run {
+                    val contextIndex = dexHelper.encodeClassIndex(Context::class.java)
+                    isDarkFollowSystemMethod = dexHelper.findMethodInvoking(
+                        switchDarkModeIndex,
+                        -1,
+                        1,
+                        "ZL",
+                        -1,
+                        longArrayOf(contextIndex),
+                        null,
+                        null,
+                        true
+                    ).map {
+                        dexHelper.decodeMethodIndex(it)
+                    }.firstOrNull() as? Method
+                    themeUtilsClass = isDarkFollowSystemMethod?.declaringClass
+                }
+                userFragment = class_ { name = userFragmentClass.name }
+                switchDarkMode = method { name = switchDarkModeMethod.name }
+                themeUtilsClass?.let {
+                    themeUtils = class_ { name = it.name }
+                }
+                isDarkFollowSystemMethod?.let {
+                    isDarkFollowSystem = method { name = it.name }
+                }
             }
 
             bangumiApiResponse = class_ {
@@ -951,7 +1076,7 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
                     }?.declaringClass?.name ?: return@class_
                 }
                 val musicNotificationHelperIndex =
-                    dexHelper.encodeClassIndex(musicNotificationHelperClass);
+                    dexHelper.encodeClassIndex(musicNotificationHelperClass)
                 val musicManagerIndex = dexHelper.findMethodUsingString(
                     "the build sdk >= 8.0",
                     true,

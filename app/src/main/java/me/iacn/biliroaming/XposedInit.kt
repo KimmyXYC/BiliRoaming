@@ -78,6 +78,9 @@ class XposedInit : IXposedHookLoadPackage, IXposedHookZygoteInit {
                     if (BuildConfig.DEBUG) {
                         startHook(SSLHook(lpparam.classLoader))
                     }
+                    if (isLSPBuiltIn) {
+                        startHook(AppUpgradeHook(lpparam.classLoader))
+                    }
                     startHook(HintHook(lpparam.classLoader))
                     startHook(BangumiSeasonHook(lpparam.classLoader))
                     startHook(BangumiPlayUrlHook(lpparam.classLoader))
@@ -99,6 +102,8 @@ class XposedInit : IXposedHookLoadPackage, IXposedHookZygoteInit {
                     startHook(LiveRoomHook(lpparam.classLoader))
                     startHook(RecommendHook(lpparam.classLoader))
                     startHook(QualityHook(lpparam.classLoader))
+                    startHook(VideoSubtitleHook(lpparam.classLoader))
+                    startHook(DarkSwitchHook(lpparam.classLoader))
                     startHook(ReplaceStoryHook(lpparam.classLoader))
                     startHook(PurifyShareHook(lpparam.classLoader))
                     startHook(SkinHook(lpparam.classLoader))
