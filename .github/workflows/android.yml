@@ -41,14 +41,14 @@ jobs:
         with:
           path: |
             ~/.gradle/caches/build-cache-*
-          key: gradle-builds-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          key: gradle-builds-${{ github.sha }}
           restore-keys: gradle-builds
       - name: Cache native build
         uses: actions/cache@v2
         with:
           path: |
             ~/.ccache
-          key: native-cache-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          key: native-cache-${{ github.sha }}
           restore-keys: native-cache-
       - name: Build with Gradle
         run: |
