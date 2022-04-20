@@ -70,7 +70,7 @@ jobs:
               ${{ github.workspace }}/app/build/outputs/apk
               ${{ github.workspace }}/app/build/outputs/mapping
       - name: Post to channel
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/me'
         env:
           CHANNEL_ID: ${{ secrets.TELEGRAM_NEW }}
           BOT_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
@@ -84,7 +84,7 @@ jobs:
             ```by `${{ github.event.head_commit.author.name }}`
             See commit detail [here](${{ github.event.head_commit.url }})
             Snapshot apk is attached
-            ●内部版本 严禁外传\!\!\!
+            ●内部版本 严禁外传
             ●增加番剧字幕繁简化功能
             ●增加自定义皮肤功能
             ▲不支持 太极\/应用转生\/Edxposed
