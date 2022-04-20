@@ -2,7 +2,7 @@ name: Android CI
 
 on:
   push:
-    branches: [ me ]
+    branches: [ master ]
 
 jobs:
   build:
@@ -70,9 +70,9 @@ jobs:
               ${{ github.workspace }}/app/build/outputs/apk
               ${{ github.workspace }}/app/build/outputs/mapping
       - name: Post to channel
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/me'
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
         env:
-          CHANNEL_ID: ${{ secrets.PLUS_KEY }}
+          CHANNEL_ID: ${{ secrets.TELEGRAM_TO }}
           BOT_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           FILE: ${{ github.workspace }}/app/release/BiliRoaming_${{ env.VERSION }}.apk
           COMMIT_MESSAGE: |+
@@ -84,9 +84,8 @@ jobs:
             ```by `${{ github.event.head_commit.author.name }}`
             See commit detail [here](${{ github.event.head_commit.url }})
             Snapshot apk is attached
-            ●内部版本 严禁外传\!\!\!
             ●增加番剧字幕繁简化功能
-            ●增加自定义皮肤功能
+            ●不完全支持自定义皮肤功能
             ▲不支持 太极\/应用转生\/Edxposed
         run: |
           ESCAPED=`python3 -c 'import json,os,urllib.parse; print(urllib.parse.quote(json.dumps(os.environ["COMMIT_MESSAGE"])))'`
@@ -98,7 +97,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Send commit to telegram
-        uses: appleboy/telegram-action@me
+        uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
