@@ -2,7 +2,7 @@ name: Android CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -70,9 +70,9 @@ jobs:
               ${{ github.workspace }}/app/build/outputs/apk
               ${{ github.workspace }}/app/build/outputs/mapping
       - name: Post to channel
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         env:
-          CHANNEL_ID: ${{ secrets.TELEGRAM_TO }}
+          CHANNEL_ID: ${{ secrets.plus_key }}
           BOT_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           FILE: ${{ github.workspace }}/app/release/BiliRoaming_${{ env.VERSION }}.apk
           COMMIT_MESSAGE: |+
@@ -97,7 +97,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Send commit to telegram
-        uses: appleboy/telegram-action@master
+        uses: appleboy/telegram-action@main
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
