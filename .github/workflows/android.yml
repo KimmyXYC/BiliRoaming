@@ -72,7 +72,7 @@ jobs:
       - name: Post to channel
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/me'
         env:
-          CHANNEL_ID: ${{ secrets.plus_key }}
+          CHANNEL_ID: ${{ secrets.PLUS_KEY }}
           BOT_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           FILE: ${{ github.workspace }}/app/release/BiliRoaming_${{ env.VERSION }}.apk
           COMMIT_MESSAGE: |+
