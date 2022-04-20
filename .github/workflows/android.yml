@@ -70,7 +70,7 @@ jobs:
               ${{ github.workspace }}/app/build/outputs/apk
               ${{ github.workspace }}/app/build/outputs/mapping
       - name: Post to channel
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/me'
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
         env:
           CHANNEL_ID: ${{ secrets.TELEGRAM_NEW }}
           BOT_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
@@ -98,7 +98,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Send commit to telegram
-        uses: appleboy/telegram-action@me
+        uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_NEW }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
