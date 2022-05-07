@@ -86,6 +86,8 @@ val packageName: String by lazy { currentContext.packageName }
 val isBuiltIn
     get() = XposedInit.modulePath.endsWith("so")
 
+val isLSPBuiltIn get() = !XposedInit.modulePath.endsWith("apk")
+
 val is64
     get() = currentContext.applicationInfo.nativeLibraryDir.contains("64")
 
@@ -100,6 +102,9 @@ val platform by lazy {
             else -> "android"
         }
 }
+
+val Any?.isNull get() = this == null
+val Any?.notNull get() = this != null
 
 val logFile by lazy { File(currentContext.externalCacheDir, "log.txt") }
 
