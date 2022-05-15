@@ -98,7 +98,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Send commit to telegram
-        uses: appleboy/telegram-action@master
+        uses: appleboy/telegram-action@me
         with:
           to: ${{ secrets.TELEGRAM_NEW }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
