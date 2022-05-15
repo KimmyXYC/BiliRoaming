@@ -85,7 +85,7 @@ jobs:
             See commit detail [here](${{ github.event.head_commit.url }})
             Snapshot apk is attached
             ●傻瓜版
-            ●设置默认解析服务器为哔哩\.plus
+            ●设置默认解析服务器为 哔哩\.plus
             ●默认开启部分功能
             ●增加番剧字幕繁简化功能
             ▲不支持 太极\/应用转生\/Edxposed
