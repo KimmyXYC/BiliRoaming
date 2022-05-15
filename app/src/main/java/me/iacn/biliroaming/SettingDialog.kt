@@ -658,7 +658,7 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             "share_log" -> onShareLogClick()
             "customize_drawer" -> onCustomizeDrawerClick()
             "custom_link" -> onCustomLinkClick()
-            "add_custom_button" -> onAddCustomButtonClick()
+            "add_custom_button" -> onAddCustomButtonClick((preference as SwitchPreference).isChecked)
             "customize_dynamic" -> onCustomDynamicClick()
             "skin" -> onSkinClick((preference as SwitchPreference).isChecked)
             "skin_import" -> onSkinImportClick((preference as SwitchPreference).isChecked)
