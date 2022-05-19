@@ -3,17 +3,20 @@
 
     <PreferenceCategory android:title="@string/main_category">
         <SwitchPreference
+            android:defaultValue="true"
             android:key="main_func"
             android:summary="@string/main_func_summary"
             android:title="@string/main_func_title" />
 
         <SwitchPreference
+            android:defaultValue="true"
             android:dependency="main_func"
             android:key="allow_download"
             android:summary="@string/allow_download_summary"
             android:title="@string/allow_download_title" />
 
         <SwitchPreference
+            android:defaultValue="true"
             android:dependency="allow_download"
             android:key="fix_download"
             android:summary="@string/fix_download_summary"
@@ -74,6 +77,7 @@
 
     <PreferenceCategory android:title="@string/miscellaneous_category">
         <SwitchPreference
+            android:defaultValue="true"
             android:key="teenagers_mode_dialog"
             android:summary="@string/teenagers_mode_dialog_summary"
             android:title="@string/teenagers_mode_dialog_title" />
@@ -120,6 +124,7 @@
             android:title="@string/replace_story_video_title" />
 
         <SwitchPreference
+            android:defaultValue="true"
             android:key="purify_share"
             android:summary="@string/purify_share_summary"
             android:title="@string/purify_share_title" />
@@ -152,6 +157,7 @@
             android:title="@string/show_info_title" />
 
         <SwitchPreference
+            android:defaultValue="true"
             android:key="save_log"
             android:title="@string/save_log_title" />
 
@@ -254,11 +260,13 @@
             android:summary="@string/add_korea_summary"
             android:title="@string/add_korea_title" />
         <SwitchPreference
+            android:defaultValue="true"
             android:dependency="hidden"
             android:key="search_area_bangumi"
             android:summary="@string/search_area_summary"
             android:title="@string/search_area_title" />
         <SwitchPreference
+            android:defaultValue="true"
             android:dependency="hidden"
             android:key="search_area_movie"
             android:summary="@string/search_area_movie_summary"
@@ -286,6 +294,13 @@
             android:summary="@string/customize_space_summary"
             android:title="@string/customize_space_title" />
         <SwitchPreference
+            android:defaultValue="true"
+            android:dependency="hidden"
+            android:key="auto_generate_subtitle"
+            android:summary="@string/auto_generate_subtitle_summary"
+            android:title="@string/auto_generate_subtitle_title" />
+        <SwitchPreference
+            android:defaultValue="true"
             android:dependency="hidden"
             android:key="block_upper_recommend_ad"
             android:summary="@string/block_video_ad_summary"
