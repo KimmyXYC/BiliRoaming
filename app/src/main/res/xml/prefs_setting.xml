@@ -323,6 +323,9 @@
             android:key="remove_video_cmd_dms"
             android:summary="@string/remove_video_cmd_dms_summary"
             android:title="@string/remove_video_cmd_dms_title" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:dependency="hidden"
             android:key="auto_generate_subtitle"
             android:summary="@string/auto_generate_subtitle_summary"
             android:title="@string/auto_generate_subtitle_title" />
