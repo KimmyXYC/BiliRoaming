@@ -281,34 +281,33 @@ class JsonHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                 accountMineClass -> {
                     drawerItems.clear()
                     val hides = sPrefs.getStringSet("hided_drawer_items", mutableSetOf())!!
-                    var deleteUpper = false
-                    if (("创作中心" !in hides && "推荐服务" in hides && "更多服务" in hides) ||
-                        ("創作中心" !in hides && "推薦服務" in hides && "更多服務" in hides)) {
-                        deleteUpper = true
-                        Log.toast("自定义我的页面，【标题项目】不能只保留【创作中心】，因此不删除任何标题项目，请修改你的漫游设置。", true)
-                    }
                     if (platform == "android_hd") {
-                        result.getObjectFieldOrNullAs<MutableList<*>?>("padSectionList")?.removeAll { items ->
-                            // 分析内容
-                            val title = items?.getObjectFieldAs<String>("title")
-                            val uri = items?.getObjectFieldAs<String>("uri")
-                            val id = items?.getObjectField("id").toString()
+                        listOf(result.getObjectFieldOrNullAs<MutableList<*>?>("padSectionList"),
+                               result.getObjectFieldOrNullAs<MutableList<*>?>("recommendSectionList"),
+                               result.getObjectFieldOrNullAs<MutableList<*>?>("moreSectionList")
+                        ).forEach { it ->
+                            it?.removeAll { items ->
+                                // 分析内容
+                                val title = items?.getObjectFieldAs<String>("title")
+                                val uri = items?.getObjectFieldAs<String>("uri")
+                                val id = items?.getObjectField("id").toString()
 
-                            // 修改成自定义按钮
-                            if (sPrefs.getBoolean("add_custom_button", false) && id == sPrefs.getString("custom_button_id", "")){
-                                val icon = items?.getObjectFieldAs<String>("icon").toString()
-                                items?.setObjectField("title", sPrefs.getString("custom_button_title", title))
-                                    ?.setObjectField("uri", sPrefs.getString("custom_button_uri", uri))
-                                    ?.setObjectField("icon", sPrefs.getString("custom_button_icon", icon))
-                                return@removeAll false
+                                // 修改成自定义按钮
+                                if (sPrefs.getBoolean("add_custom_button", false) && id == sPrefs.getString("custom_button_id", "")){
+                                    val icon = items?.getObjectFieldAs<String>("icon").toString()
+                                    items?.setObjectField("title", sPrefs.getString("custom_button_title", title))
+                                        ?.setObjectField("uri", sPrefs.getString("custom_button_uri", uri))
+                                        ?.setObjectField("icon", sPrefs.getString("custom_button_icon", icon))
+                                    return@removeAll false
+                                }
+
+                                val showing = id !in hides
+                                // 将结果写入 drawerItems
+                                drawerItems.add(BottomItem(title, uri, id, showing))
+                                // 去除红点
+                                if (sPrefs.getBoolean("purify_drawer_reddot", false)) items?.setIntField("redDot",0)
+                                showing.not()
                             }
-
-                            val showing = id !in hides
-                            // 将结果写入 drawerItems
-                            drawerItems.add(BottomItem(title, uri, id, showing))
-                            // 去除红点
-                            if (sPrefs.getBoolean("purify_drawer_reddot", false)) items?.setIntField("redDot",0)
-                            showing.not()
                         }
                     } else {
                         result.getObjectFieldOrNullAs<MutableList<*>?>("sectionListV2")?.forEach { sections ->
@@ -371,10 +370,21 @@ class JsonHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                             }
                         }
                         // 删除标题组
-                        if (!deleteUpper) {
-                            result.getObjectFieldOrNullAs<MutableList<*>?>("sectionListV2")?.removeAll { sections ->
-                                sections?.getObjectFieldOrNull("title").toString() in hides
+                        var deleteTitle = true
+                        result.getObjectFieldOrNullAs<MutableList<*>?>("sectionListV2")?.removeAll { sections ->
+                            val title = sections?.getObjectFieldOrNull("title").toString()
+                            if (title !in hides) {
+                                if (title == "创作中心" || title == "游戏中心" || title == "創作中心" || title == "遊戲中心")
+                                    deleteTitle = false // 标记
+                                else if (title == "推荐服务" || title == "推薦服務")
+                                    deleteTitle = true // 取消标记
+                            } else {
+                                if ((title == "更多服务" || title == "更多服務") && !deleteTitle) {
+                                    Log.toast("自定义我的页面，【标题项目】不能只保留【创作中心】或【游戏中心】，因此不删除【更多服务】，请修改你的漫游设置", true)
+                                    return@removeAll false
+                                }
                             }
+                            title in hides
                         }
                     }
                     accountMineClass.findFieldOrNull("vipSectionRight")?.set(result, null)
@@ -385,8 +395,8 @@ class JsonHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                 splashClass -> if (sPrefs.getBoolean("purify_splash", false) &&
                     sPrefs.getBoolean("hidden", false)
                 ) {
-                    result.getObjectFieldAs<MutableList<*>?>("splashList")?.clear()
-                    result.getObjectFieldAs<MutableList<*>?>("strategyList")?.clear()
+                    result.getObjectFieldOrNullAs<MutableList<*>>("splashList")?.clear()
+                    result.getObjectFieldOrNullAs<MutableList<*>>("strategyList")?.clear()
                 }
                 defaultWordClass, defaultKeywordClass, searchRanksClass, searchReferralClass, followingcardSearchRanksClass -> if (sPrefs.getBoolean(
                         "purify_search",
@@ -402,10 +412,8 @@ class JsonHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                 brandSplashDataClass -> if (sPrefs.getBoolean("custom_splash", false) ||
                     sPrefs.getBoolean("custom_splash_logo", false)
                 ) {
-                    val brandList = result.getObjectFieldAs<MutableList<Any>>("brandList")
-                    val showList = result.getObjectFieldAs<MutableList<Any>>("showList")
-                    brandList.clear()
-                    showList.clear()
+                    result.getObjectFieldOrNullAs<MutableList<Any>>("brandList")?.clear()
+                    result.getObjectFieldOrNullAs<MutableList<Any>>("showList")?.clear()
                 }
                 eventEntranceClass -> if (sPrefs.getBoolean("purify_game", false) &&
                     sPrefs.getBoolean("hidden", false)
@@ -492,24 +500,6 @@ class JsonHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                             )
                         }
                     }
-            }
-        }
-
-        if (sPrefs.getBoolean("purify_city", false) &&
-            sPrefs.getBoolean("hidden", false)
-        ) {
-            listOf(
-                "com.bapis.bilibili.app.dynamic.v1.DynTabReply",
-                "com.bapis.bilibili.app.dynamic.v2.DynTabReply"
-            ).forEach { clazz ->
-                clazz.hookAfterMethod(
-                    mClassLoader,
-                    "getDynTabList"
-                ) { param ->
-                    param.result = (param.result as List<*>).filter {
-                        it?.callMethodAs<Long>("getCityId") == 0L
-                    }
-                }
             }
         }
     }

@@ -235,11 +235,6 @@
             android:title="@string/customize_home_recommend_title" />
         <SwitchPreference
             android:dependency="hidden"
-            android:key="purify_city"
-            android:summary="@string/purify_city_summary"
-            android:title="@string/purify_city_title" />
-        <SwitchPreference
-            android:dependency="hidden"
             android:key="add_bangumi"
             android:summary="@string/add_bangumi_summary"
             android:title="@string/add_bangumi_title" />
@@ -300,6 +295,31 @@
             android:key="auto_generate_subtitle"
             android:summary="@string/auto_generate_subtitle_summary"
             android:title="@string/auto_generate_subtitle_title" />
+        <SwitchPreference
+            android:dependency="hidden"
+            android:key="skin"
+            android:summary="@string/skin_summary"
+            android:title="@string/skin_title" />
+        <SwitchPreference
+            android:dependency="hidden"
+            android:key="skin_import"
+            android:summary="@string/skin_summary"
+            android:title="@string/skin_import_title" />
+        <SwitchPreference
+            android:dependency="hidden"
+            android:key="remove_video_relate_promote"
+            android:summary="@string/remove_video_relate_promote_summary"
+            android:title="@string/remove_video_relate_promote_title" />
+        <SwitchPreference
+            android:dependency="remove_video_relate_promote"
+            android:key="remove_video_relate_only_av"
+            android:summary="@string/remove_video_relate_only_av_summary"
+            android:title="@string/remove_video_relate_only_av_title" />
+        <SwitchPreference
+            android:dependency="hidden"
+            android:key="remove_video_cmd_dms"
+            android:summary="@string/remove_video_cmd_dms_summary"
+            android:title="@string/remove_video_cmd_dms_title" />
     </PreferenceCategory>
 
     <PreferenceCategory

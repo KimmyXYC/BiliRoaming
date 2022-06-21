@@ -39,14 +39,14 @@ val appVerCode: String by rootProject
 val appVerName: String by rootProject
 
 android {
-    compileSdk = 32
-    buildToolsVersion = "32.0.0"
+    compileSdk = 33
+    buildToolsVersion = "33.0.0"
     ndkVersion = "24.0.8215888"
 
     defaultConfig {
         applicationId = "me.iacn.biliroaming"
         minSdk = 24
-        targetSdk = 32  // Target Android Sv2
+        targetSdk = 33  // Target Android T
         versionCode = appVerCode.toInt()
         versionName = appVerName
 
@@ -67,12 +67,8 @@ android {
                     "-fno-stack-protector",
                     "-fomit-frame-pointer",
                     "-Wno-builtin-macro-redefined",
-                    "-ffunction-sections",
-                    "-fdata-sections",
                     "-Wno-unused-value",
-                    "-Wl,--gc-sections",
                     "-D__FILE__=__FILE_NAME__",
-                    "-Wl,--exclude-libs,ALL",
                 )
                 cppFlags("-std=c++20", *flags)
                 cFlags("-std=c18", *flags)
@@ -110,27 +106,47 @@ android {
                     "config"
                 )
         }
+        debug {
+            externalNativeBuild {
+                cmake {
+                    arguments.addAll(
+                        arrayOf(
+                            "-DCMAKE_CXX_FLAGS_DEBUG=-Og",
+                            "-DCMAKE_C_FLAGS_DEBUG=-Og",
+                        )
+                    )
+                }
+            }
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles("proguard-rules.pro")
             externalNativeBuild {
                 cmake {
-                    cppFlags += "-flto"
+                    val flags =arrayOf(
+                        "-flto",
+                        "-ffunction-sections",
+                        "-fdata-sections",
+                        "-Wl,--gc-sections",
+                        "-fno-unwind-tables",
+                        "-fno-asynchronous-unwind-tables",
+                        "-Wl,--exclude-libs,ALL",
+                    )
+                    cppFlags.addAll(flags)
+                    cFlags.addAll(flags)
                     val configFlags = arrayOf(
                         "-Oz",
                         "-DNDEBUG"
                     ).joinToString(" ")
                     arguments(
+                        "-DCMAKE_BUILD_TYPE=Release",
                         "-DCMAKE_CXX_FLAGS_RELEASE=$configFlags",
-                        "-DCMAKE_CXX_FLAGS_RELWITHDEBINFO=$configFlags",
                         "-DCMAKE_C_FLAGS_RELEASE=$configFlags",
-                        "-DCMAKE_C_FLAGS_RELWITHDEBINFO=$configFlags",
                         "-DDEBUG_SYMBOLS_PATH=${project.buildDir.absolutePath}/symbols/$name",
                     )
                 }
             }
-
         }
     }
 
@@ -142,6 +158,7 @@ android {
     kotlinOptions {
         jvmTarget = "11"
         freeCompilerArgs = listOf(
+            "-Xuse-k2",
             "-Xno-param-assertions",
             "-Xno-call-assertions",
             "-Xno-receiver-assertions",
@@ -179,6 +196,7 @@ android {
     externalNativeBuild {
         cmake {
             path("src/main/jni/CMakeLists.txt")
+            version = "3.22.1+"
         }
     }
     namespace = "me.iacn.biliroaming"
@@ -186,7 +204,7 @@ android {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.19.4"
+        artifact = "com.google.protobuf:protoc:3.21.1"
     }
 
     generatedFilesBaseDir = "$projectDir/src/generated"
@@ -245,11 +263,11 @@ configurations.all {
 
 dependencies {
     compileOnly("de.robv.android.xposed:api:82")
-    implementation("com.google.protobuf:protobuf-kotlin-lite:3.19.4")
-    compileOnly("com.google.protobuf:protoc:3.19.4")
+    implementation("com.google.protobuf:protobuf-kotlin-lite:3.21.1")
+    compileOnly("com.google.protobuf:protoc:3.21.1")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${rootProject.extra["kotlinVersion"]}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.2")
     implementation("androidx.documentfile:documentfile:1.0.1")
     implementation("dev.rikka.ndk.thirdparty:cxx:1.2.0")
 }
