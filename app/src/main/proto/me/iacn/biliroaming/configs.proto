@@ -21,6 +21,17 @@ message Field {
 message OkHttp {
   optional Field request = 1;
   optional Field url = 2;
+  optional Class class_request = 3;
+  optional Class response_builder = 4;
+  repeated Field response_build_fields = 5;
+  optional Class response_body = 6;
+  optional Method create = 7;
+  optional Class media_type = 8;
+  optional Method get = 9;
+  optional Class real_call = 10;
+  optional Method execute = 11;
+  optional Field real_call_request = 12;
+  optional Class protocol = 13;
 }
 
 message FastJson {
@@ -167,11 +178,15 @@ message DownloadThread {
   optional ReportDownload report_download = 4;
 }
 
+message HomeUserCenter {
+  optional Class class = 1;
+  optional Method add_setting = 2;
+}
+
 message Settings {
-  optional Class home_user_center = 1;
   optional Class menu_group_item = 2;
   optional Class setting_router = 3;
-  optional Method add_setting = 4;
+  repeated HomeUserCenter home_user_center = 5;
 }
 
 message MusicNotification {
@@ -237,4 +252,5 @@ message HookInfo {
   optional Class bangumi_season = 60;
   optional KanBan kan_ban = 67;
   optional ToastHelper toast_helper = 68;
+  optional Class brotli_input_stream = 69;
 }
