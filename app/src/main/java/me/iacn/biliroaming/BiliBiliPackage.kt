@@ -136,6 +136,8 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
     val realCallClass by Weak { mHookInfo.okHttp.realCall from mClassLoader }
     val protocolClass by Weak { mHookInfo.okHttp.protocol from mClassLoader }
 
+    val playerQualityServiceClass by Weak { "com.bilibili.playerbizcommon.features.quality.PlayerQualityService" from mClassLoader }
+
     val ids: Map<String, Int> by lazy {
         mHookInfo.mapIds.idsMap
     }
@@ -241,6 +243,8 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
     fun showToast() = mHookInfo.toastHelper.show.orNull
 
     fun cancelShowToast() = mHookInfo.toastHelper.cancel.orNull
+
+    fun canTryWatchVipQuality() = mHookInfo.canTryWatchVipQuality.orNull
 
     fun setInvalidTips() = commentInvalidFragmentClass?.declaredMethods?.find { m ->
         m.parameterTypes.let { it.size == 2 && it[0] == commentInvalidFragmentClass && it[1].name == "kotlin.Pair" }
@@ -1680,6 +1684,22 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
                 ).asSequence().firstNotNullOfOrNull {
                     dexHelper.decodeMethodIndex(it)
                 }?.declaringClass?.name ?: return@class_
+            }
+            canTryWatchVipQuality = method {
+                name = dexHelper.findMethodUsingString(
+                    "user is vip, cannot trywatch",
+                    false,
+                    dexHelper.encodeClassIndex(Boolean::class.java),
+                    -1,
+                    null,
+                    -1,
+                    null,
+                    null,
+                    null,
+                    true
+                ).firstOrNull()?.let {
+                    dexHelper.decodeMethodIndex(it)
+                }?.name ?: return@method
             }
 
             dexHelper.close()
