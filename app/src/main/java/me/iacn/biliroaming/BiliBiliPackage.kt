@@ -126,7 +126,6 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
     val biliAccountsClass by Weak { mHookInfo.biliAccounts.class_ from mClassLoader }
     val networkExceptionClass by Weak { "com.bilibili.lib.moss.api.NetworkException" from mClassLoader }
     val brotliInputStreamClass by Weak { mHookInfo.brotliInputStream from mClassLoader }
-    val projectionPlayUrlClass by Weak { "com.bilibili.lib.projection.internal.api.model.ProjectionPlayUrl" from mClassLoader }
     val arcConfClass by Weak { "com.bapis.bilibili.app.playurl.v1.ArcConf" from mClassLoader }
     val arcConfExtraContentClass by Weak { "com.bapis.bilibili.app.playurl.v1.ExtraContent" from mClassLoader }
     val commentInvalidFragmentClass by Weak {
@@ -140,7 +139,6 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
     val mediaTypeClass by Weak { mHookInfo.okHttp.mediaType from mClassLoader }
     val realCallClass by Weak { mHookInfo.okHttp.realCall from mClassLoader }
     val protocolClass by Weak { mHookInfo.okHttp.protocol from mClassLoader }
-
     val playerQualityServiceClass by Weak { "com.bilibili.playerbizcommon.features.quality.PlayerQualityService" from mClassLoader }
     val mossResponseHandlerClass by Weak { "com.bilibili.lib.moss.api.MossResponseHandler" from mClassLoader }
     val projectionPlayUrlClass by Weak { "com.bilibili.lib.projection.internal.api.model.ProjectionPlayUrl" from mClassLoader }
