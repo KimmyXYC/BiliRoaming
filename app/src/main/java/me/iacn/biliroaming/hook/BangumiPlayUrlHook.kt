@@ -151,8 +151,11 @@ class BangumiPlayUrlHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                         Log.w("请求解析服务器发生错误: ${messages.trim()}")
                         Log.toast("请求解析服务器发生错误: ${messages.trim()}")
                     }
-                } else if (isDownload) {
-                    param.result = fixDownloadProto(response)
+                } else {
+                    lastSeasonInfo["epid"] = request.callMethod("getEpId")?.toString()
+                    if (isDownload) {
+                        param.result = fixDownloadProto(response)
+                    }
                 }
             }
         }
@@ -217,8 +220,11 @@ class BangumiPlayUrlHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                         Log.w("请求解析服务器发生错误: ${messages.trim()}")
                         Log.toast("请求解析服务器发生错误: ${messages.trim()}")
                     }
-                } else if (isDownload) {
-                    param.result = fixDownloadProto(response)
+                } else {
+                    lastSeasonInfo["epid"] = request.callMethod("getEpId")?.toString()
+                    if (isDownload) {
+                        param.result = fixDownloadProto(response)
+                    }
                 }
             }
         }
@@ -284,6 +290,12 @@ class BangumiPlayUrlHook(classLoader: ClassLoader) : BaseHook(classLoader) {
 
     private fun DmViewReplyKt.Dsl.buildSubtitles(subtitles: JSONArray) {
         subtitle = videoSubtitle {
+            val lanCodes = mutableSetOf<String>()
+            for (s in subtitles) {
+                lanCodes.add(s.optString("key"))
+            }
+            this.subtitles.forEach { lanCodes.add(it.lan) }
+            val replaceHans = "zh-Hans" !in lanCodes
             for (subtitle in subtitles) {
                 this.subtitles +=
                     subtitleItem {
@@ -291,6 +303,7 @@ class BangumiPlayUrlHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                         idStr = subtitle.optLong("id").toString()
                         subtitleUrl = subtitle.optString("url")
                         lan = subtitle.optString("key")
+                            .let { if (it == "cn" && replaceHans) "zh-Hans" else it }
                         lanDoc = subtitle.optString("title")
                     }
             }
