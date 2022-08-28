@@ -112,6 +112,7 @@ class XposedInit : IXposedHookLoadPackage, IXposedHookZygoteInit {
                     startHook(TryWatchVipQualityHook(lpparam.classLoader))
                     startHook(AllowMiniPlayHook(lpparam.classLoader))
                     startHook(StartActivityHook(lpparam.classLoader))
+                    startHook(FullStoryHook(lpparam.classLoader))
                     startHook(PlayArcConfHook(lpparam.classLoader))
                     startHook(VideoSubtitleHook(lpparam.classLoader))
                     startHook(SubtitleDownloadHook(lpparam.classLoader))
