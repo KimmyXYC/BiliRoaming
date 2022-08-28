@@ -143,6 +143,7 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
 
     val playerQualityServiceClass by Weak { "com.bilibili.playerbizcommon.features.quality.PlayerQualityService" from mClassLoader }
     val mossResponseHandlerClass by Weak { "com.bilibili.lib.moss.api.MossResponseHandler" from mClassLoader }
+    val projectionPlayUrlClass by Weak { "com.bilibili.lib.projection.internal.api.model.ProjectionPlayUrl" from mClassLoader }
 
     val ids: Map<String, Int> by lazy {
         mHookInfo.mapIds.idsMap
