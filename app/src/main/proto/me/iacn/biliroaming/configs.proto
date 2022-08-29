@@ -21,6 +21,17 @@ message Field {
 message OkHttp {
   optional Field request = 1;
   optional Field url = 2;
+  optional Class class_request = 3;
+  optional Class response_builder = 4;
+  repeated Field response_build_fields = 5;
+  optional Class response_body = 6;
+  optional Method create = 7;
+  optional Class media_type = 8;
+  optional Method get = 9;
+  optional Class real_call = 10;
+  optional Method execute = 11;
+  optional Field real_call_request = 12;
+  optional Class protocol = 13;
 }
 
 message FastJson {
@@ -204,8 +215,14 @@ message PlayerFullStoryWidget {
   optional Method method = 2;
 }
 
+message ToolbarService {
+  optional Class class = 1;
+  optional Method mini_play = 2;
+}
+
 message HookInfo {
   int64 last_update_time = 1;
+  optional ToolbarService toolbar_service = 502;
   optional MapIds map_ids = 2;
   int32 client_version_code = 3;
   int32 module_version_code = 4;
