@@ -103,41 +103,43 @@ jobs:
           ESCAPED=`python3 -c 'import json,os,urllib.parse; print(urllib.parse.quote(json.dumps(os.environ["COMMIT_MESSAGE"])))'`
           curl -v "https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup?chat_id=${CHANNEL_ID}&media=%5B%7B%22type%22:%22document%22,%20%22media%22:%22attach://release%22,%22parse_mode%22:%22MarkdownV2%22,%22caption%22:${ESCAPED}%7D%5D"  -F release="@$FILE"
 
+  upload:
+    name: Patch Apk and Upload Release
+    if: ${{ github.event_name != 'pull_request' && success() && github.ref == 'refs/heads/master' }}
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.9.x'
-
       - name: Prepare Python packages
         run: |
           pip install -U pip
           pip install -U wheel
           pip install pyrogram==2.0.41 tgcrypto==1.2.3
           pip install -U urllib3
-
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
           name: snapshot
-
       - name: Get xposed module path
         run: |
           module_apk=`echo release/BiliRoaming_*.apk`
           echo "MODULE_APK=$module_apk" >> $GITHUB_ENV
-
       - name: Download bilibili apk
         run: wget -nv -O Bilibili.apk https://dl.hdslb.com/mobile/latest/android64/iBiliPlayer-html5_app_bili.apk
- 
       - name: Append version
         run: |
           mkdir patched
           mv Bilibili.apk patched/Bilibili.apk
           echo "BILIBILI_NAME=Bilibili" >> $GITHUB_ENV
           echo "BILIBILI_APK=patched/Bilibili.apk" >> $GITHUB_ENV       
-
       - name: Download jar patcher
         run: wget -nv -O lspatch.jar https://github.com/LSPosed/LSPatch/releases/download/v0.3.1/lspatch.jar
-
       - name: Apply patch
         run: |
           echo "Patch with builtin module."
@@ -146,7 +148,6 @@ jobs:
           renamed=patched/$BILIBILI_NAME-with-module.apk
           mv $patched_apk $renamed
           echo "PATCHED_APK=$renamed" >> $GITHUB_ENV
-
       - name: Send to Telegram
         shell: python
         env:
