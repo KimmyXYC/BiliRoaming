@@ -103,6 +103,93 @@ jobs:
           ESCAPED=`python3 -c 'import json,os,urllib.parse; print(urllib.parse.quote(json.dumps(os.environ["COMMIT_MESSAGE"])))'`
           curl -v "https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup?chat_id=${CHANNEL_ID}&media=%5B%7B%22type%22:%22document%22,%20%22media%22:%22attach://release%22,%22parse_mode%22:%22MarkdownV2%22,%22caption%22:${ESCAPED}%7D%5D"  -F release="@$FILE"
 
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9.x'
+
+      - name: Prepare Python packages
+        run: |
+          pip install -U pip
+          pip install -U wheel
+          pip install -U pyrogram tgcrypto
+
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: snapshot
+
+      - name: Get xposed module path
+        run: |
+          module_apk=`echo release/BiliRoaming_*.apk`
+          echo "MODULE_APK=$module_apk" >> $GITHUB_ENV
+
+      - name: Download bilibili apk
+        run: wget -nv -O Bilibili.apk https://dl.hdslb.com/mobile/latest/android64/iBiliPlayer-html5_app_bili.apk
+ 
+      - name: Append version
+        run: |
+          mkdir patched
+          mv Bilibili.apk patched/Bilibili.apk
+          echo "BILIBILI_NAME=Bilibili" >> $GITHUB_ENV
+          echo "BILIBILI_APK=patched/Bilibili.apk" >> $GITHUB_ENV       
+
+      - name: Download jar patcher
+        run: wget -nv -O lspatch.jar https://github.com/LSPosed/LSPatch/releases/download/v0.3.1/lspatch.jar
+
+      - name: Apply patch
+        run: |
+          echo "Patch with builtin module."
+          java -jar lspatch.jar -m $MODULE_APK --sigbypasslv 2 $BILIBILI_APK
+          patched_apk=`echo $BILIBILI_NAME-*.apk`
+          renamed=patched/$BILIBILI_NAME-with-module.apk
+          mv $patched_apk $renamed
+          echo "PATCHED_APK=$renamed" >> $GITHUB_ENV
+
+      - name: Send to Telegram
+        shell: python
+        env:
+          API_ID: ${{ secrets.TELEGRAM_API_ID }}
+          API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+          CHANNEL_ID: ${{ secrets.TELEGRAM_TO }}
+          CHANNEL_ID_ME: ${{ secrets.TELEGRAM_TO_ME }}
+          SESSION: ${{ secrets.TELEGRAM_SESSION }}
+          RUN_URL: ${{ format('{0}/{1}/actions/runs/{2}', github.server_url, github.repository, github.run_id) }}
+        run: |
+          import asyncio
+          import inspect
+          import os
+          from pyrogram import Client
+          from pyrogram.types.input_media import InputMediaDocument
+          async def main():
+            session = os.environ["SESSION"]
+            api_id=os.environ["API_ID"],
+            api_hash=os.environ["API_HASH"],
+            bot = Client(
+              "client",
+              session_string=session,
+            )
+            async with bot:
+              channel_id = int(os.environ["CHANNEL_ID"])
+              channel_id_me = int(os.environ["CHANNEL_ID_ME"])
+              document = os.environ["PATCHED_APK"]
+              msg_p1 = "#哔哩漫游 #傻瓜版"
+              msg_p2 = f"哔哩漫游傻瓜版自动打包\n本消息由github action自动发布"
+              caption = "{}\n{}".format(msg_p1, msg_p2)
+              module = InputMediaDocument(media=os.environ["MODULE_APK"], caption="")
+              patched = InputMediaDocument(media=os.environ["PATCHED_APK"], caption=caption)
+              await bot.send_media_group(
+                chat_id=channel_id_me,
+                media=[module,patched],
+              )
+          async def wait():
+            try:
+              await asyncio.wait_for(main(), timeout=600)
+            except asyncio.TimeoutError:
+              print("message send timeout!!!")
+              exit(1)
+          asyncio.run(wait())
+
   skipped:
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.event.head_commit.message, '[skip ci]') }}
