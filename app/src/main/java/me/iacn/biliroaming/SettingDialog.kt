@@ -138,6 +138,7 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             when (platform) {
                 "android_i" -> {
                     if (versionCode >= 3000000) supportAddChannel = true
+                    if (versionCode < 6830000) supportRevertLive = true
                 }
                 "android_b" -> {
                     if (versionCode >= 6270000) supportAddChannel = true
