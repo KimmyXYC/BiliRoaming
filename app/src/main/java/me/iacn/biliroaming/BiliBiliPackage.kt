@@ -120,6 +120,8 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
     val musicBackgroundPlayerClass by Weak { mHookInfo.musicNotification.musicBackgroundPlayer from mClassLoader }
     val kanbanCallbackClass by Weak { mHookInfo.kanBan.class_ from mClassLoader }
     val toastHelperClass by Weak { mHookInfo.toastHelper.class_ from mClassLoader }
+    val toolbarServiceClass by Weak { mHookInfo.toolbarService.class_ from mClassLoader }
+    val miniPlayMethod get() = mHookInfo.toolbarService.miniPlay.orNull
     val videoDetailCallbackClass by Weak { mHookInfo.videoDetailCallback from mClassLoader }
     val biliAccountsClass by Weak { mHookInfo.biliAccounts.class_ from mClassLoader }
     val networkExceptionClass by Weak { "com.bilibili.lib.moss.api.NetworkException" from mClassLoader }
@@ -382,6 +384,30 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
                                 && it.type == Int::class.javaPrimitiveType
                     }
                 }.forEach { ids[it.name] = it.get(null) as Int }
+            }
+            toolbarService = toolbarService {
+                val bangumiActivityClass =
+                    "com.bilibili.bangumi.ui.page.detail.BangumiDetailActivityV3".from(classloader)
+                        ?: return@toolbarService
+                val onStopMethod = bangumiActivityClass.getDeclaredMethod("onStop")
+                val onStopMethodIndex = dexHelper.encodeMethodIndex(onStopMethod)
+                val contextClassIndex = dexHelper.encodeClassIndex(Context::class.java)
+                val miniPlayMethod = dexHelper.findMethodInvoking(
+                    onStopMethodIndex,
+                    -1,
+                    1,
+                    "VL",
+                    -1,
+                    longArrayOf(contextClassIndex),
+                    null,
+                    null,
+                    true
+                ).asSequence().firstNotNullOfOrNull {
+                    dexHelper.decodeMethodIndex(it)
+                } ?: return@toolbarService
+                val toolbarServiceClass = miniPlayMethod.declaringClass
+                class_ = class_ { name = toolbarServiceClass.name }
+                miniPlay = method { name = miniPlayMethod.name }
             }
 
             bangumiApiResponse = class_ {

@@ -226,6 +226,8 @@
     <string name="dialog_blur_background_title">全局 Dialog 背景模糊</string>
     <string name="block_up_rcmd_ads_title">屏蔽UP主推荐广告</string>
     <string name="block_up_rcmd_ads_summary">屏蔽视频播放过程中，浮窗出现的UP主推荐广告</string>
+    <string name="enable_download_subtitle_title">启用字幕下载功能</string>
+    <string name="enable_download_subtitle_summary">需开启解锁番剧限制选项，此功能才会生效。功能入口：播放详情页右上角三点 -> 字幕下载。字幕加载完成后入口才能显示。</string>
     <string name="subtitle_convert_failed" translatable="false">字幕转换失败，请重试</string>
     <string name="subtitle_dict_download_failed" translatable="false">转换字典下载失败，请重试</string>
     <string name="subtitle_append_info" translatable="false">请注意，站内宣传漫游或脚本会被拉黑</string>
