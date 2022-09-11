@@ -228,7 +228,10 @@
     <string name="block_up_rcmd_ads_summary">封鎖影片播放過程中，浮窗出現的UP主推薦廣告</string>
     <string name="enable_download_subtitle_title">啟用字幕下載功能</string>
     <string name="enable_download_subtitle_summary">需開啟解鎖番劇限製選項，此功能才會生效。功能入口：播放詳情頁右上角三點 -> 字幕下載。字幕加載完成後入口才能顯示。</string>
+<<<<<<< HEAD
 
+=======
+>>>>>>> 31eb05399734c7b75476892535e934a84d78cbac
 
 
 
