@@ -7,6 +7,8 @@ import android.app.Activity
 import android.app.Activity.RESULT_CANCELED
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -18,8 +20,10 @@ import android.os.Bundle
 import android.preference.*
 import android.provider.MediaStore
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.documentfile.provider.DocumentFile
@@ -474,6 +478,15 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
                 editTexts.forEach {
                     it.setText(prefs.getString("${it.tag}_accessKey", ""))
                     it.hint = ""
+                }
+                view.findViewById<Button>(R.id.copy_key).run {
+                    visibility = View.VISIBLE
+                    setOnClickListener {
+                        ClipData.newPlainText("", instance.accessKey ?: "").let {
+                            activity.getSystemService(ClipboardManager::class.java)
+                                .setPrimaryClip(it)
+                        }
+                    }
                 }
                 setTitle(R.string.customize_accessKey_title)
                 setView(view)
