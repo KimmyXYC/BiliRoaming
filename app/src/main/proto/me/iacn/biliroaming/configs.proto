@@ -222,6 +222,11 @@ message BiliAccounts {
   optional Method get_access_key = 3;
 }
 
+message ToolbarService {
+  optional Class class = 1;
+  optional Method mini_play = 2;
+}
+
 message PlayerFullStoryWidget {
   optional Class class = 1;
   optional Method method = 2;
@@ -286,4 +291,5 @@ message HookInfo {
   optional Class comment_long_click_new = 73;
   optional Method on_operate_click = 74;
   optional Method get_content_string = 75;
+  optional ToolbarService toolbar_service = 502;
 }
