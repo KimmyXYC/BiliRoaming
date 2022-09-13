@@ -192,8 +192,11 @@ class BangumiPlayUrlHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                         Log.w("请求解析服务器发生错误: ${messages.trim()}")
                         Log.toast("请求解析服务器发生错误: ${messages.trim()}")
                     }
-                } else if (isDownload) {
-                    param.result = fixDownloadProto(response)
+                } else {
+                    lastSeasonInfo["epid"] = request.callMethod("getEpId")?.toString()
+                    if (isDownload) {
+                        param.result = fixDownloadProto(response)
+                    }
                 }
             }
         }
@@ -258,8 +261,11 @@ class BangumiPlayUrlHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                         Log.w("请求解析服务器发生错误: ${messages.trim()}")
                         Log.toast("请求解析服务器发生错误: ${messages.trim()}")
                     }
-                } else if (isDownload) {
-                    param.result = fixDownloadProto(response)
+                } else {
+                    lastSeasonInfo["epid"] = request.callMethod("getEpId")?.toString()
+                    if (isDownload) {
+                        param.result = fixDownloadProto(response)
+                    }
                 }
             }
         }
