@@ -232,6 +232,11 @@
             android:summary="@string/customize_bottom_bar_summary"
             android:title="@string/customize_bottom_bar_title" />
         <SwitchPreference
+            android:dependency="hidden"
+            android:key="add_channel"
+            android:summary="@string/add_channel_summary"
+            android:title="@string/add_channel_title" />
+        <SwitchPreference
             android:defaultValue="true"
             android:dependency="hidden"
             android:key="purify_game"

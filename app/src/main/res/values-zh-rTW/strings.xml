@@ -137,6 +137,8 @@
     <string name="add_bangumi_summary">在首頁標籤新增大陸/港澳台番劇分頁</string>
     <string name="add_movie_title">新增其他地區影視</string>
     <string name="add_movie_summary">在首頁標籤新增大陸/港澳台影視分頁</string>
+    <string name="add_channel_title">添加頻道按鈕</string>
+    <string name="add_channel_summary">在底欄添加頻道按鈕（重啟兩次生效）</string>
     <string name="custom_subtitle_title">自訂字幕樣式</string>
     <string name="custom_subtitle_summary">開啟後能自訂CC字幕樣式，但透明度跟隨彈幕透明度</string>
     <string name="customize_space_title">淨化使用者空間</string>
