@@ -125,7 +125,7 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
         private fun checkCompatibleVersion() {
             val versionCode = getVersionCode(packageName)
             var supportMusicNotificationHook = true
-            var supportAddChannel = false
+            val supportAddChannel = versionCode >= 6270000
             var supportCustomizeTab = true
             val supportFullSplash = try {
                 instance.splashInfoClass?.getMethod("getMode") != null
@@ -135,24 +135,12 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             val supportMain = !isBuiltIn || !is64 || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
             var supportDrawer = instance.homeUserCenterClass != null
             var supportDrawerStyle = true
-            var supportRevertLive = false
+            val supportRevertLive = versionCode < 6830000
             when (platform) {
                 "android_hd" -> {
                     supportCustomizeTab = false
                     supportDrawer = false
                     supportDrawerStyle = false
-                }
-                "android_i" -> {
-                    if (versionCode < 6830000) supportRevertLive = true
-                    if (versionCode >= 3000000) supportAddChannel = true
-                }
-                "android_b" -> {
-                    if (versionCode < 6830000) supportRevertLive = true
-                    if (versionCode >= 6270000) supportAddChannel = true
-                }
-                "android" -> {
-                    if (versionCode < 6830000) supportRevertLive = true
-                    if (versionCode >= 6270000) supportAddChannel = true
                 }
             }
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
@@ -162,7 +150,7 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             val supportCustomizeCC = instance.subtitleSpanClass != null
             val supportStoryVideo = instance.storyVideoActivityClass != null
             val supportPurifyShare = instance.shareClickResultClass != null
-            val supportDownloadThread = versionCode < 6630000
+            val supportDownloadThread = versionCode < 6630000 || versionCode >= 6900000
             if (!supportDrawer)
                 disablePreference("drawer")
             if (!supportSplashHook) {
