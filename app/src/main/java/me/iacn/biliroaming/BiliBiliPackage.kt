@@ -120,6 +120,8 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
     val musicBackgroundPlayerClass by Weak { mHookInfo.musicNotification.musicBackgroundPlayer from mClassLoader }
     val kanbanCallbackClass by Weak { mHookInfo.kanBan.class_ from mClassLoader }
     val toastHelperClass by Weak { mHookInfo.toastHelper.class_ from mClassLoader }
+    val toolbarServiceClass by Weak { mHookInfo.toolbarService.class_ from mClassLoader }
+    val miniPlayMethod get() = mHookInfo.toolbarService.miniPlay.orNull
     val videoDetailCallbackClass by Weak { mHookInfo.videoDetailCallback from mClassLoader }
     val biliAccountsClass by Weak { mHookInfo.biliAccounts.class_ from mClassLoader }
     val networkExceptionClass by Weak { "com.bilibili.lib.moss.api.NetworkException" from mClassLoader }
@@ -274,6 +276,8 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
 
     fun getContentString() = mHookInfo.getContentString.orNull
 
+    fun setLineToAllCount() = mHookInfo.setLineToAllCount.orNull
+
     private fun readHookInfo(context: Context): Configs.HookInfo {
         try {
             val hookInfoFile = File(context.cacheDir, Constant.HOOK_INFO_FILE_NAME)
@@ -387,6 +391,30 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
                                 && it.type == Int::class.javaPrimitiveType
                     }
                 }.forEach { ids[it.name] = it.get(null) as Int }
+            }
+            toolbarService = toolbarService {
+                val bangumiActivityClass =
+                    "com.bilibili.bangumi.ui.page.detail.BangumiDetailActivityV3".from(classloader)
+                        ?: return@toolbarService
+                val onStopMethod = bangumiActivityClass.getDeclaredMethod("onStop")
+                val onStopMethodIndex = dexHelper.encodeMethodIndex(onStopMethod)
+                val contextClassIndex = dexHelper.encodeClassIndex(Context::class.java)
+                val miniPlayMethod = dexHelper.findMethodInvoking(
+                    onStopMethodIndex,
+                    -1,
+                    1,
+                    "VL",
+                    -1,
+                    longArrayOf(contextClassIndex),
+                    null,
+                    null,
+                    true
+                ).asSequence().firstNotNullOfOrNull {
+                    dexHelper.decodeMethodIndex(it)
+                } ?: return@toolbarService
+                val toolbarServiceClass = miniPlayMethod.declaringClass
+                class_ = class_ { name = toolbarServiceClass.name }
+                miniPlay = method { name = miniPlayMethod.name }
             }
 
             bangumiApiResponse = class_ {
@@ -1634,6 +1662,50 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
                 ).firstOrNull()?.let {
                     dexHelper.decodeMethodIndex(it)
                 }?.declaringClass?.declaringClass?.name ?: return@class_
+            }
+            setLineToAllCount = method {
+                val ellipsizingTextViewClass =
+                    "com.bilibili.bplus.followingcard.widget.EllipsizingTextView"
+                        .from(classloader) ?: return@method
+                name = ellipsizingTextViewClass.declaredMethods
+                    .find { it.name == "setLineToAllCount" }?.name
+                    ?: run {
+                        val setOnClickListenerIndex = dexHelper.encodeMethodIndex(
+                            View::class.java.getMethod(
+                                "setOnClickListener",
+                                View.OnClickListener::class.java
+                            )
+                        )
+                        val ellipsizingTextViewIndex =
+                            dexHelper.encodeClassIndex(ellipsizingTextViewClass)
+                        val viewGroupIndex = dexHelper.encodeClassIndex(ViewGroup::class.java)
+                        val listIndex = dexHelper.encodeClassIndex(List::class.java)
+                        dexHelper.findMethodInvoked(
+                            setOnClickListenerIndex,
+                            -1,
+                            -1,
+                            "LLL",
+                            -1,
+                            longArrayOf(viewGroupIndex, listIndex),
+                            null,
+                            null,
+                            false
+                        ).asSequence().firstNotNullOfOrNull {
+                            dexHelper.findMethodInvoking(
+                                it,
+                                -1,
+                                -1,
+                                "VI",
+                                ellipsizingTextViewIndex,
+                                null,
+                                null,
+                                null,
+                                true
+                            ).asSequence().firstNotNullOfOrNull { idx ->
+                                dexHelper.decodeMethodIndex(idx) as? Method
+                            }
+                        }
+                    }?.name ?: return@method
             }
             kanBan = kanBan {
                 val statusClass =
