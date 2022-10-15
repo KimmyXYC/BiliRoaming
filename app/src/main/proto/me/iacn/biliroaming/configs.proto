@@ -293,4 +293,5 @@ message HookInfo {
   optional Method set_line_to_all_count = 503;
   optional Method on_operate_click = 74;
   optional Method get_content_string = 75;
+  optional Class live_pager_recycler_view = 76;
 }
