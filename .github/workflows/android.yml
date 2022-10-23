@@ -188,20 +188,3 @@ jobs:
               print("message send timeout!!!")
               exit(1)
           asyncio.run(wait())
-  
-  skipped:
-    runs-on: ubuntu-latest
-    if: ${{ startsWith(github.event.head_commit.message, '[skip ci]') }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Send commit to telegram
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.TELEGRAM_TO }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          format: markdown
-          message: |+
-            New push to github!
-            *${{ github.event.head_commit.message }}* by ${{ github.event.head_commit.author.name }}
-            See commit detail [here](${{ github.event.head_commit.url }})
-            This push skipped building
