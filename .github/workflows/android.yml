@@ -96,9 +96,9 @@ jobs:
       - build
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9.x'
       - name: Prepare Python packages
@@ -108,7 +108,7 @@ jobs:
           pip install pyrogram==2.0.41 tgcrypto==1.2.3
           pip install -U urllib3
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: snapshot
       - name: Get xposed module path
@@ -124,7 +124,7 @@ jobs:
           echo "BILIBILI_NAME=Bilibili" >> $GITHUB_ENV
           echo "BILIBILI_APK=patched/Bilibili.apk" >> $GITHUB_ENV       
       - name: Download jar patcher
-        run: wget -nv -O lspatch.jar https://github.com/LSPosed/LSPatch/releases/download/v0.4/lspatch.jar
+        run: wget -nv -O lspatch.jar https://github.com/LSPosed/LSPatch/releases/download/v0.5/lspatch.jar
       - name: Apply patch
         run: |
           echo "Patch with builtin module."
