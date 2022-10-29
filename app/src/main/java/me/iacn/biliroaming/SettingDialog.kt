@@ -51,6 +51,7 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
         private lateinit var prefs: SharedPreferences
         private lateinit var biliprefs: SharedPreferences
         private var counter: Int = 0
+        private var customSubtitleDialog: CustomSubtitleDialog? = null
 
         @Deprecated("Deprecated in Java")
         override fun onCreate(savedInstanceState: Bundle?) {
@@ -215,7 +216,9 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
         }
 
         private fun showCustomSubtitle() {
-            CustomSubtitleDialog(activity, prefs).show()
+            CustomSubtitleDialog(activity, this, prefs).also {
+                customSubtitleDialog = it
+            }.show()
         }
 
         @Deprecated("Deprecated in Java")
@@ -253,6 +256,7 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
 
         @Deprecated("Deprecated in Java")
         override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+            customSubtitleDialog?.onActivityResult(requestCode, resultCode, data)
             when (requestCode) {
                 SPLASH_SELECTION, LOGO_SELECTION -> {
                     val destFile = when (requestCode) {

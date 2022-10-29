@@ -12,6 +12,9 @@ import android.text.style.AbsoluteSizeSpan
 import android.text.style.LineBackgroundSpan
 import android.text.style.MaskFilterSpan
 import android.text.style.StyleSpan
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import me.iacn.biliroaming.*
 import me.iacn.biliroaming.API.*
 import me.iacn.biliroaming.BiliBiliPackage.Companion.instance
@@ -20,6 +23,7 @@ import me.iacn.biliroaming.hook.BangumiSeasonHook.Companion.lastSeasonInfo
 import me.iacn.biliroaming.hook.BangumiPlayUrlHook.Companion.countDownLatch
 import me.iacn.biliroaming.utils.*
 import org.json.JSONArray
+import java.io.File
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import java.util.concurrent.Callable
@@ -31,6 +35,8 @@ import kotlin.math.roundToInt
 class SubtitleHook(classLoader: ClassLoader) : BaseHook(classLoader) {
     companion object {
         var currentSubtitles = listOf<SubtitleItem>()
+
+        val fontFile by lazy { File(currentContext.getExternalFilesDir(null), "subtitle.font") }
 
         val backgroundSpan = { backgroundColor: Int, textSize: Int ->
             LineBackgroundSpan { canvas, paint, left, right, top, _, bottom, text, start, end, _ ->
@@ -136,6 +142,8 @@ class SubtitleHook(classLoader: ClassLoader) : BaseHook(classLoader) {
     private val closeText =
         currentContext.getString(getResId("Player_option_subtitle_lan_doc_nodisplay", "string"))
 
+    private var subtitleFont: Typeface? = null
+
     override fun startHook() {
         if (customSubtitle)
             if (instance.cronCanvasClass == null) {
@@ -206,6 +214,26 @@ class SubtitleHook(classLoader: ClassLoader) : BaseHook(classLoader) {
             .apply { isAccessible = true }
         val strokeColorField = cronCanvasClass.getDeclaredField("strokeColor")
             .apply { isAccessible = true }
+        val maxWidthField = cronCanvasClass.getDeclaredField("maxWidth")
+            .apply { isAccessible = true }
+        MainScope().launch(Dispatchers.IO) {
+            subtitleFont = if (fontFile.isFile) {
+                Typeface.createFromFile(fontFile)
+            } else null
+        }
+        cronCanvasClass.hookBeforeMethod(
+            "measureText",
+            String::class.java
+        ) { param ->
+            val cronCanvas = param.thisObject
+            val paint = paintField.get(cronCanvas) as TextPaint
+            val maxWidth = maxWidthField.getFloat(cronCanvas)
+            if (maxWidth != 0.0F) {
+                paint.strokeWidth = strokeWidth
+                paint.isFakeBoldText = boldText
+                subtitleFont?.let { paint.typeface = it }
+            }
+        }
         cronCanvasClass.hookBeforeMethod(
             "drawText",
             String::class.java,
@@ -213,13 +241,9 @@ class SubtitleHook(classLoader: ClassLoader) : BaseHook(classLoader) {
             Float::class.javaPrimitiveType,
             Boolean::class.javaPrimitiveType
         ) { param ->
-            val stroke = param.args[3] as Boolean
             val cronCanvas = param.thisObject
-
-            val paint = paintField.get(cronCanvas) as TextPaint
-            if (!stroke && paint.strokeWidth == 0.0F) {
-                paint.strokeWidth = strokeWidth
-                paint.isFakeBoldText = boldText
+            val maxWidth = maxWidthField.getFloat(cronCanvas)
+            if (maxWidth != 0.0F) {
                 fillColorField.setInt(cronCanvas, fillColor)
                 strokeColorField.setInt(cronCanvas, strokeColor)
                 param.args[3] = true
