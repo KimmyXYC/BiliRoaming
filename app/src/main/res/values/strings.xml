@@ -137,6 +137,8 @@
     <string name="add_bangumi_summary">在首页标签添加大陆/港澳台番剧分页</string>
     <string name="add_movie_title">添加其他地区影视</string>
     <string name="add_movie_summary">在首页标签添加大陆/港澳台影视分页</string>
+    <string name="add_channel_title">添加频道按钮</string>
+    <string name="add_channel_summary">在底栏添加频道按钮（重启两次生效）</string>
     <string name="custom_subtitle_title">自定义字幕样式</string>
     <string name="custom_subtitle_summary">开启后能自定义CC字幕样式，但透明度跟随弹幕透明度</string>
     <string name="customize_space_title">净化用户空间</string>
@@ -202,7 +204,16 @@
     <string name="keyword_group_add">添加</string>
     <string name="keyword_group_delete">删除</string>
     <string name="keyword_group_clear">删除所有</string>
+    <string name="skin_title">填写自制主题</string>
+    <string name="skin_import_title">导入自制主题</string>
+    <string name="skin_summary">重启后，要等待十几秒下载资源，然后再重启（同时开启时的优先度：导入＞填写）</string>
     <string name="prefs_save_success_and_reboot">保存成功 重启后生效</string>
+    <string name="text_fold_title">文本折叠控制</string>
+    <string name="text_fold_summary">支持自定义评论及动态开始折叠的文本行数</string>
+    <string name="text_fold_comment_max_lines_title">评论开始折叠行数</string>
+    <string name="text_fold_dyn_max_lines_title">动态开始折叠行数</string>
+    <string name="text_fold_dyn_lines_to_all_title">动态全文阅读触发行数</string>
+    <string name="text_fold_line">%1$s行</string>
     <string name="remove_video_relate_promote_title">移除视频下方的相关推广</string>
     <string name="remove_video_relate_promote_summary">移除视频下方的相关推广，例如游戏、课程、会员购、创作推广等</string>
     <string name="remove_video_relate_only_av_title">仅展示UP主投稿视频</string>
@@ -222,9 +233,12 @@
     <string name="dialog_blur_background_title">全局 Dialog 背景模糊</string>
     <string name="block_up_rcmd_ads_title">屏蔽UP主推荐广告</string>
     <string name="block_up_rcmd_ads_summary">屏蔽视频播放过程中，浮窗出现的UP主推荐广告</string>
+    <string name="enable_download_subtitle_title">启用字幕下载功能</string>
+    <string name="enable_download_subtitle_summary">需开启解锁番剧限制选项，此功能才会生效。功能入口：播放详情页右上角三点 -> 字幕下载。字幕加载完成后入口才能显示。</string>
     <string name="subtitle_convert_failed" translatable="false">字幕转换失败，请重试</string>
     <string name="subtitle_dict_download_failed" translatable="false">转换字典下载失败，请重试</string>
     <string name="subtitle_append_info" translatable="false">请注意，站内宣传漫游或脚本会被拉黑</string>
+    <string name="subtitle_dict_latest_url" translatable="false">https://api.github.com/repos/BBSub/ZhConvertDict/releases/latest</string>
     <string name="generate_subtitle_title">生成简中字幕</string>
     <string name="generate_subtitle_summary">根据繁体字幕自动生成简体中文字幕</string>
     <string name="forbid_switch_live_room_title">禁止滑动切换直播间</string>
