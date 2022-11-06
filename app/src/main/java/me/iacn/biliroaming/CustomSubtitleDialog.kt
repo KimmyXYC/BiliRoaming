@@ -53,6 +53,10 @@ class CustomSubtitleDialog(val activity: Activity, fragment: Fragment, prefs: Sh
         backgroundColor.setText(prefs.getString(backgroundColor.tag.toString(), "20000000"))
         val fontSize = view.findViewById<EditText>(R.id.font_size)
         fontSize.setText(prefs.getInt(fontSize.tag.toString(), 30).toString())
+        val fontSizePortrait = view.findViewById<EditText>(R.id.fontSizePortrait)
+        fontSizePortrait.setText(prefs.getInt(fontSizePortrait.tag.toString(), 0).toString())
+        val fontSizeLandscape = view.findViewById<EditText>(R.id.fontSizeLandscape)
+        fontSizeLandscape.setText(prefs.getInt(fontSizeLandscape.tag.toString(), 0).toString())
         val fontBlurSolid = view.findViewById<EditText>(R.id.font_blur_solid)
         fontBlurSolid.setText(prefs.getInt(fontBlurSolid.tag.toString(), 1).toString())
         val strokeColor = view.findViewById<EditText>(R.id.stroke_color)
@@ -126,6 +130,8 @@ class CustomSubtitleDialog(val activity: Activity, fragment: Fragment, prefs: Sh
             llNoBg.visibility = View.GONE
             llBold.visibility = View.GONE
             llFont.visibility = View.GONE
+            view.findViewById<View>(R.id.ll_sizePortrait).visibility = View.GONE
+            view.findViewById<View>(R.id.ll_sizeLandscape).visibility = View.GONE
         } else {
             view.findViewById<View>(R.id.pvBlack).visibility = View.GONE
             view.findViewById<View>(R.id.pvWhite).visibility = View.GONE
@@ -143,10 +149,24 @@ class CustomSubtitleDialog(val activity: Activity, fragment: Fragment, prefs: Sh
                 putBoolean(boldSwitch.tag.toString(), boldSwitch.isChecked)
                 putString(fontColor.tag.toString(), fontColor.text.toString())
                 putString(backgroundColor.tag.toString(), backgroundColor.text.toString())
-                putInt(fontSize.tag.toString(), fontSize.text.toString().toInt())
-                putInt(fontBlurSolid.tag.toString(), fontBlurSolid.text.toString().toInt())
+                putInt(fontSize.tag.toString(), fontSize.text.toString().toIntOrNull() ?: 30)
+                putInt(
+                    fontSizePortrait.tag.toString(),
+                    fontSizePortrait.text.toString().toIntOrNull() ?: 0
+                )
+                putInt(
+                    fontSizeLandscape.tag.toString(),
+                    fontSizeLandscape.text.toString().toIntOrNull() ?: 0
+                )
+                putInt(
+                    fontBlurSolid.tag.toString(),
+                    fontBlurSolid.text.toString().toIntOrNull() ?: 1
+                )
                 putString(strokeColor.tag.toString(), strokeColor.text.toString())
-                putFloat(strokeWidth.tag.toString(), strokeWidth.text.toString().toFloat())
+                putFloat(
+                    strokeWidth.tag.toString(),
+                    strokeWidth.text.toString().toFloatOrNull() ?: 5.0F
+                )
                 putBoolean(fixBreak.tag.toString(), fixBreak.isChecked)
             }.apply()
         }
