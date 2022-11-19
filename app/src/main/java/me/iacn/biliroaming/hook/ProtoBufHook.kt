@@ -47,8 +47,8 @@ class ProtoBufHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                         if (hidden && removeRelatePromote && removeRelateOnlyAv
                             && r?.callMethodAs<String?>("getGoto").let { it != "av" }
                         ) add(idx)
-                        if (hidden && removeRelateNothing
-                            && r?.callMethodAs<String?>("getGoto")
+                        if (hidden && removeRelatePromote && removeRelateOnlyAv && removeRelateNothing
+                            && r?.callMethodAs<String?>("getGoto").let { it == "av" }
                         ) add(idx)
                     }
             }.reversed().forEach {
