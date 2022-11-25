@@ -8,6 +8,7 @@ class ProtoBufHook(classLoader: ClassLoader) : BaseHook(classLoader) {
         val purifyCity = sPrefs.getBoolean("purify_city", false)
         val removeRelatePromote = sPrefs.getBoolean("remove_video_relate_promote", false)
         val removeRelateOnlyAv = sPrefs.getBoolean("remove_video_relate_only_av", false)
+        val removeRelateNothing = sPrefs.getBoolean("remove_video_relate_nothing", false)
         val removeCmdDms = sPrefs.getBoolean("remove_video_cmd_dms", false)
         val purifySearch = sPrefs.getBoolean("purify_search", false)
         val purifyCampus = sPrefs.getBoolean("purify_campus", false)
@@ -36,6 +37,10 @@ class ProtoBufHook(classLoader: ClassLoader) : BaseHook(classLoader) {
             "com.bapis.bilibili.app.view.v1.ViewReq"
         ) { param ->
             param.result ?: return@hookAfterMethod
+            if (hidden && removeRelatePromote && removeRelateOnlyAv && removeRelateNothing) {
+                param.result.callMethod("clearRelates")
+                return@hookAfterMethod
+            }
             buildSet {
                 param.result.callMethodAs<List<*>?>("getRelatesList")
                     ?.onEachIndexed { idx, r ->

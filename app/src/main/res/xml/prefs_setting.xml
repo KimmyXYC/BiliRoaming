@@ -390,6 +390,11 @@
             android:summary="@string/remove_video_relate_only_av_summary"
             android:title="@string/remove_video_relate_only_av_title" />
         <SwitchPreference
+            android:dependency="remove_video_relate_only_av"
+            android:key="remove_video_relate_nothing"
+            android:summary="@string/remove_video_relate_nothing_summary"
+            android:title="@string/remove_video_relate_nothing_title" />
+        <SwitchPreference
             android:defaultValue="true"
             android:dependency="hidden"
             android:key="remove_video_cmd_dms"
@@ -418,6 +423,12 @@
             android:key="block_up_rcmd_ads"
             android:summary="@string/block_up_rcmd_ads_summary"
             android:title="@string/block_up_rcmd_ads_title" />
+
+        <SwitchPreference
+            android:dependency="hidden"
+            android:key="remove_live_shopping_ads"
+            android:summary="@string/remove_live_shopping_ads_summary"
+            android:title="@string/remove_live_shopping_ads_title" />
     </PreferenceCategory>
 
     <PreferenceCategory
