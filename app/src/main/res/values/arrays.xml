@@ -47,7 +47,6 @@
         <item>番剧</item>
         <item>影视</item>
         <item>韩综</item>
-        <item>热点</item>
         <item>其它</item>
     </string-array>
     <string-array name="tab_values">
@@ -57,7 +56,6 @@
         <item>bangumi</item>
         <item>movie</item>
         <item>korea</item>
-        <item>activity</item>
         <item>other_tabs</item>
     </string-array>
     <string-array name="home_recommend_entries">
@@ -214,5 +212,23 @@
         <item>23</item>
         <item>24</item>
         <item>25</item>
+    </string-array>
+    <string-array name="live_popup_entries">
+        <item>购物卡片</item>
+        <item>购物精选</item>
+        <item>关注提醒</item>
+        <item>直播预约</item>
+        <item>投喂支持</item>
+        <item>滚动横幅</item>
+        <item>电池任务</item>
+    </string-array>
+    <string-array name="live_popup_values">
+        <item>shoppingCard</item>
+        <item>shoppingSelected</item>
+        <item>follow</item>
+        <item>reserve</item>
+        <item>gift</item>
+        <item>banner</item>
+        <item>task</item>
     </string-array>
 </resources>
