@@ -87,7 +87,7 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             findPreference("skin_import")?.onPreferenceClickListener = this
             findPreference("customize_drawer")?.onPreferenceClickListener = this
             findPreference("custom_link")?.onPreferenceClickListener = this
-            findPreference("add_custom_button")?.onPreferenceClickListener = this
+            findPreference("add_custom_button")?.onPreferenceChangeListener = this
             findPreference("customize_dynamic")?.onPreferenceClickListener = this
             findPreference("text_fold")?.onPreferenceClickListener = this
             checkCompatibleVersion()
@@ -233,9 +233,12 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
                         selectImage(LOGO_SELECTION)
                 }
                 "custom_subtitle" -> {
-                    if (newValue as Boolean) {
+                    if (newValue as Boolean)
                         showCustomSubtitle()
-                    }
+                }
+                "add_custom_button" -> {
+                    if (newValue as Boolean)
+                        onAddCustomButtonClick()
                 }
             }
             return true

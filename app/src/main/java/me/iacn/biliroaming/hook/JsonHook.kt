@@ -302,7 +302,7 @@ class JsonHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                     sPrefs.getBoolean("hidden", false)
                 ) {
                     result.javaClass.fields.forEach {
-                        if (it.type != Int::class.javaPrimitiveType)
+                        if (!it.type.isPrimitive)
                             result.setObjectField(it.name, null)
                     }
                 }
@@ -432,7 +432,9 @@ class JsonHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                     if (hidden && purifyLivePopups.contains("shoppingCard"))
                         result.setObjectField("shoppingCardDetail", null)
                     if (hidden && purifyLivePopups.contains("shoppingSelected"))
-                        result.setObjectField("selectedGoods", null)
+                        result.runCatchingOrNull {
+                            setObjectField("selectedGoods", null)
+                        }
                 }
 
                 liveGoodsCardInfoClass -> {
@@ -442,7 +444,7 @@ class JsonHook(classLoader: ClassLoader) : BaseHook(classLoader) {
 
                 biliLiveRoomInfoClass -> {
                     if (hidden && purifyLivePopups.contains("follow"))
-                        result.getObjectField("functionCard")
+                        result.getObjectFieldOrNull("functionCard")
                             ?.setObjectField("followCard", null)
                     if (hidden && purifyLivePopups.contains("banner"))
                         result.setObjectField("bannerInfo", null)
@@ -460,10 +462,12 @@ class JsonHook(classLoader: ClassLoader) : BaseHook(classLoader) {
 
                 biliLiveRoomUserInfoClass -> {
                     if (hidden && purifyLivePopups.contains("gift"))
-                        result.getObjectField("functionCard")
+                        result.getObjectFieldOrNull("functionCard")
                             ?.setObjectField("sengGiftCard", null)
                     if (hidden && purifyLivePopups.contains("task"))
-                        result.setObjectField("taskInfo", null)
+                        result.runCatchingOrNull {
+                            setObjectField("taskInfo", null)
+                        }
                 }
             }
         }
