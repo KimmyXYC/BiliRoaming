@@ -368,7 +368,7 @@ class JsonHook(classLoader: ClassLoader) : BaseHook(classLoader) {
             }
         }
 
-        if (sPrefs.getBoolean("modify_vip_section_style", false) || sPrefs.getBoolean("remove_vip_section", false)) {
+        if (sPrefs.getBoolean("modify_vip_section_style", false)) {
             val vipEntranceViewClass =
                 "tv.danmaku.bili.ui.main2.mine.widgets.MineVipEntranceView".from(mClassLoader)
             val vipEntranceViewField =

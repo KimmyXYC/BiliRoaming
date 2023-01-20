@@ -237,8 +237,6 @@
     <string name="block_up_rcmd_ads_summary">屏蔽视频播放过程中，浮窗出现的UP主推荐广告</string>
     <string name="enable_download_subtitle_title">启用字幕下载功能</string>
     <string name="enable_download_subtitle_summary">需开启解锁番剧限制选项，此功能才会生效。功能入口：播放详情页右上角三点 -> 字幕下载。字幕加载完成后入口才能显示。</string>
-    <string name="remove_vip_section_title">移除我的大会员横幅</string>
-    <string name="remove_vip_section_summary">将我的页面中的大会员横幅移除</string>
     <string name="modify_vip_section_style_title">修改我的大会员样式</string>
     <string name="modify_vip_section_style_summary">我的页面将大会员样式从横幅修改为正常样式</string>
     <string name="subtitle_convert_failed" translatable="false">字幕转换失败，请重试</string>
