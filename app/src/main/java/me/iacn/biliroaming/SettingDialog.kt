@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Activity.RESULT_CANCELED
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -498,7 +499,7 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
                 view.findViewById<Button>(R.id.copy_key).run {
                     visibility = View.VISIBLE
                     setOnClickListener {
-                        ClipData.newPlainText("", instance.accessKey ?: "").let {
+                        ClipData.newPlainText("", instance.accessKey ?: "").let {   
                             activity.getSystemService(ClipboardManager::class.java)
                                 .setPrimaryClip(it)
                         }
