@@ -89,6 +89,7 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             findPreference("custom_link")?.onPreferenceClickListener = this
             findPreference("add_custom_button")?.onPreferenceChangeListener = this
             findPreference("customize_dynamic")?.onPreferenceClickListener = this
+            findPreference("misc_remove_ads")?.onPreferenceClickListener = this
             findPreference("text_fold")?.onPreferenceClickListener = this
             checkCompatibleVersion()
             checkUpdate()
@@ -722,6 +723,7 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             "skin_import" -> onSkinImportClick((preference as SwitchPreference).isChecked)
             "customize_dynamic" -> onCustomDynamicClick()
             "text_fold" -> onTextFoldClick()
+            "misc_remove_ads" -> run { MiscRemoveAdsDialog(activity, prefs).show(); true }
             else -> false
         }
     }

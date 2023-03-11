@@ -9,7 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.DocumentsContract
 import androidx.documentfile.provider.DocumentFile
-import me.iacn.biliroaming.BiliBiliPackage
+import me.iacn.biliroaming.BiliBiliPackage.Companion.instance
 import me.iacn.biliroaming.hook.SubtitleHook.Companion.currentSubtitles
 import me.iacn.biliroaming.utils.*
 import me.iacn.biliroaming.utils.SubtitleHelper.convertToSrt
@@ -133,8 +133,8 @@ class SubtitleDownloadHook(classLoader: ClassLoader) : BaseHook(classLoader) {
             }
         }
 
-        BiliBiliPackage.instance.toolbarServiceClass?.hookBeforeMethod(
-            BiliBiliPackage.instance.miniPlayMethod, Context::class.java
+        instance.toolbarServiceClass?.hookBeforeMethod(
+            instance.miniPlayMethod, Context::class.java
         ) { param ->
             if (preventFinish) {
                 preventFinish = false
@@ -142,16 +142,7 @@ class SubtitleDownloadHook(classLoader: ClassLoader) : BaseHook(classLoader) {
             }
         }
 
-        val superMenuClass =
-            "com.bilibili.app.comm.supermenu.SuperMenu".from(mClassLoader) ?: return
-        val menuItemClickListenerClass =
-            "com.bilibili.app.comm.supermenu.core.listeners.OnMenuItemClickListenerV2"
-                .from(mClassLoader) ?: return
-        val menuItemClickListenerField =
-            superMenuClass.findFieldByExactType(menuItemClickListenerClass) ?: return
-        val menuItemImplClass = "com.bilibili.app.comm.supermenu.core.MenuItemImpl"
-            .from(mClassLoader) ?: return
-        superMenuClass.hookBeforeMethod("show") { param ->
+        instance.superMenuClass?.hookBeforeMethod(instance.showMethod) { param ->
             if (currentSubtitles.isEmpty())
                 return@hookBeforeMethod
             val thiz = param.thisObject
@@ -167,17 +158,18 @@ class SubtitleDownloadHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                             .let { id -> id == settingsItemId || id == settingsItemId2 }
                     } ?: return@hookBeforeMethod
                 } ?: return@hookBeforeMethod
-            val subDownloadItem = menuItemImplClass.new(
+            val subDownloadItem = instance.menuItemImplClass?.new(
                 currentContext,
                 subDownloadItemId,
                 downloadIconResId,
                 "字幕下载"
-            )
+            ) ?: return@hookBeforeMethod
             menuItems.add(0, subDownloadItem)
-            val menuItemClickListener = menuItemClickListenerField.get(thiz)
+            val menuItemClickListener = thiz.getObjectField(instance.clickListenerField)
+                ?: return@hookBeforeMethod
             val proxyClickListener = Proxy.newProxyInstance(
                 menuItemClickListener.javaClass.classLoader,
-                arrayOf(menuItemClickListenerClass),
+                arrayOf(instance.menuItemClickListenerClass),
             ) { _, m, args ->
                 if (m.name == "onItemClick" && args[0].callMethod("getItemId") == subDownloadItemId) {
                     showFormatChoiceDialog(activity)
@@ -186,7 +178,7 @@ class SubtitleDownloadHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                     m.invoke(menuItemClickListener, *args)
                 }
             }
-            menuItemClickListenerField.set(thiz, proxyClickListener)
+            thiz.setObjectField(instance.clickListenerField, proxyClickListener)
         }
     }
 

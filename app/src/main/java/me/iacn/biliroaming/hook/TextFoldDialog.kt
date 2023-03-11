@@ -10,8 +10,8 @@ import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
 import me.iacn.biliroaming.hook.TextFoldHook
+import me.iacn.biliroaming.utils.dp
 import me.iacn.biliroaming.utils.sPrefs
-import kotlin.math.roundToInt
 
 class TextFoldDialog(val activity: Activity, prefs: SharedPreferences) :
     AlertDialog.Builder(activity) {
@@ -74,15 +74,7 @@ class TextFoldDialog(val activity: Activity, prefs: SharedPreferences) :
         setView(root)
     }
 
-    private val Int.dp
-        inline get() = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            toFloat(),
-            context.resources.displayMetrics
-        ).roundToInt()
-
-    @Suppress("NOTHING_TO_INLINE")
-    private inline fun string(resId: Int) = context.getString(resId)
+    private fun string(resId: Int) = context.getString(resId)
 
     private fun seekBarItem(
         name: String,

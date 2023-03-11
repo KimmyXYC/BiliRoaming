@@ -420,6 +420,12 @@
             android:key="skin_import"
             android:summary="@string/skin_summary"
             android:title="@string/skin_import_title" />
+
+        <Preference
+            android:dependency="hidden"
+            android:key="misc_remove_ads"
+            android:title="@string/misc_remove_ads_title" />
+
         <SwitchPreference
             android:defaultValue="true"
             android:dependency="hidden"

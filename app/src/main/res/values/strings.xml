@@ -214,6 +214,9 @@
     <string name="text_fold_dyn_max_lines_title">动态开始折叠行数</string>
     <string name="text_fold_dyn_lines_to_all_title">动态全文阅读触发行数</string>
     <string name="text_fold_line">%1$s行</string>
+    <string name="misc_remove_ads_title">去广告杂项</string>
+    <string name="remove_search_ads_title">移除搜索推广</string>
+    <string name="remove_comment_cm_title">移除评论页顶部推广横条</string>
     <string name="remove_video_relate_promote_title">移除视频下方的相关推广</string>
     <string name="remove_video_relate_promote_summary">移除视频下方的相关推广，例如游戏、课程、会员购、创作推广等</string>
     <string name="remove_video_relate_only_av_title">仅展示UP主投稿视频</string>

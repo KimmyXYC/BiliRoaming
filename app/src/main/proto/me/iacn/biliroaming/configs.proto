@@ -212,6 +212,14 @@ message ToolbarService {
   optional Method mini_play = 2;
 }
 
+message SuperMenu {
+  optional Class class = 1;
+  optional Class menu_item_click_listener = 2;
+  optional Class menu_item_impl = 3;
+  optional Method show = 4;
+  optional Field click_listener = 5;
+}
+
 message PlayerFullStoryWidget {
   optional Class class = 1;
   optional Method method = 2;
@@ -288,6 +296,7 @@ message HookInfo {
   optional Class comment_long_click_new = 73;
   optional ToolbarService toolbar_service = 502;
   optional Method set_line_to_all_count = 503;
+  optional SuperMenu super_menu = 504;
   optional Method on_operate_click = 74;
   optional Method get_content_string = 75;
   optional Class live_pager_recycler_view = 76;

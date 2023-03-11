@@ -287,6 +287,7 @@ fun View.addBackgroundRipple() = with(TypedValue()) {
     setBackgroundResource(resourceId)
 }
 
+@Suppress("DEPRECATION")
 fun windowAlertPermissionGranted(): Boolean {
     val context = currentContext
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
