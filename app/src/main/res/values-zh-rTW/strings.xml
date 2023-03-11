@@ -214,6 +214,15 @@
     <string name="text_fold_dyn_max_lines_title">動態開始摺疊行數</string>
     <string name="text_fold_dyn_lines_to_all_title">動態全文閱讀觸發行數</string>
     <string name="text_fold_line">%1$s行</string>
+    <string name="playback_speed_override_title">自訂播放速度列表</string>
+    <string name="playback_speed_override_summary">同時應用到影片及聽影片播放速度列表</string>
+    <string name="playback_speed_override_hint">空格分隔，例如：2 1.5 1，空表示預設</string>
+    <string name="playback_speed_override_invalid">輸入無效！</string>
+    <string name="playback_speed_override_must">必須包含預設倍速1！</string>
+    <string name="playback_speed_override_ok">重啟生效</string>
+    <string name="default_playback_speed_title">默認播放速度</string>
+    <string name="default_playback_speed_summary">僅應用到影片播放</string>
+    <string name="default_playback_speed_hint">例如：1.5，空表示預設</string>
     <string name="misc_remove_ads_title">去廣告雜項</string>
     <string name="remove_search_ads_title">移除搜尋推廣</string>
     <string name="remove_comment_cm_title">移除評論頁頂部推廣橫條</string>

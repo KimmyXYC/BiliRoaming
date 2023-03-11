@@ -19,6 +19,7 @@ import android.os.Build
 import android.os.Bundle
 import android.preference.*
 import android.provider.MediaStore
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -88,9 +89,11 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             findPreference("customize_drawer")?.onPreferenceClickListener = this
             findPreference("custom_link")?.onPreferenceClickListener = this
             findPreference("add_custom_button")?.onPreferenceChangeListener = this
-            findPreference("customize_dynamic")?.onPreferenceClickListener = this
             findPreference("misc_remove_ads")?.onPreferenceClickListener = this
             findPreference("text_fold")?.onPreferenceClickListener = this
+            findPreference("playback_speed_override")?.onPreferenceClickListener = this
+            findPreference("default_playback_speed")?.onPreferenceClickListener = this
+            findPreference("customize_dynamic")?.onPreferenceClickListener = this
             checkCompatibleVersion()
             checkUpdate()
         }
@@ -685,6 +688,104 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             return true
         }
 
+        private fun onPlaybackSpeedOverrideClick(): Boolean {
+            val editText = EditText(activity)
+            editText.setHint(R.string.playback_speed_override_hint)
+            editText.setText(sPrefs.getString("playback_speed_override", null).orEmpty())
+            AlertDialog.Builder(activity)
+                .setTitle(R.string.playback_speed_override_title)
+                .setView(editText)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null)
+                .create().apply {
+                    setOnShowListener {
+                        getButton(Dialog.BUTTON_POSITIVE)?.setOnClickListener {
+                            val text = editText.text.toString().trim()
+                            if (text.isEmpty()) {
+                                sPrefs.edit().remove("playback_speed_override").apply()
+                                Log.toast(
+                                    activity.getString(R.string.playback_speed_override_ok),
+                                    true
+                                )
+                                dismiss()
+                                return@setOnClickListener
+                            }
+                            val speedList = text.runCatchingOrNull {
+                                split(' ').filter { it.isNotBlank() }
+                                    .map { it.toFloat() }.filter { it > 0F && it.isFinite() }
+                            }
+                            if (speedList == null) {
+                                Log.toast(
+                                    activity.getString(R.string.playback_speed_override_invalid),
+                                    true
+                                )
+                            } else if (!speedList.contains(1F)) {
+                                Log.toast(
+                                    activity.getString(R.string.playback_speed_override_must),
+                                    true
+                                )
+                            } else {
+                                val formatSpeedText = speedList.joinToString(" ")
+                                sPrefs.edit().putString("playback_speed_override", formatSpeedText)
+                                    .apply()
+                                Log.toast(
+                                    activity.getString(R.string.playback_speed_override_ok),
+                                    true
+                                )
+                                dismiss()
+                            }
+                        }
+                    }
+                }.show()
+            return true
+        }
+
+        private fun onDefaultPlaybackSpeedClick(): Boolean {
+            val editText = EditText(activity)
+            editText.setHint(R.string.default_playback_speed_hint)
+            editText.setText(
+                sPrefs.getFloat("default_playback_speed", 0F)
+                    .takeIf { it != 0F }?.toString().orEmpty()
+            )
+            editText.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+            AlertDialog.Builder(activity)
+                .setTitle(R.string.default_playback_speed_title)
+                .setView(editText)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null)
+                .create().apply {
+                    setOnShowListener {
+                        getButton(Dialog.BUTTON_POSITIVE)?.setOnClickListener {
+                            val text = editText.text.toString().trim()
+                            if (text.isEmpty()) {
+                                sPrefs.edit().remove("default_playback_speed").apply()
+                                Log.toast(
+                                    activity.getString(R.string.playback_speed_override_ok),
+                                    true
+                                )
+                                dismiss()
+                                return@setOnClickListener
+                            }
+                            val speed = text.toFloatOrNull()
+                            if (speed == null || speed <= 0F || !speed.isFinite()) {
+                                Log.toast(
+                                    activity.getString(R.string.playback_speed_override_invalid),
+                                    true
+                                )
+                            } else {
+                                sPrefs.edit().putFloat("default_playback_speed", speed).apply()
+                                Log.toast(
+                                    activity.getString(R.string.playback_speed_override_ok),
+                                    true
+                                )
+                                dismiss()
+                            }
+                        }
+                    }
+                }.show()
+            return true
+        }
+
         private fun onCustomDynamicClick(): Boolean {
             DynamicFilterDialog(activity, prefs).create().also { dialog ->
                 dialog.setOnShowListener {
@@ -721,9 +822,11 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             "add_custom_button" -> onAddCustomButtonClick()
             "skin" -> onSkinClick((preference as SwitchPreference).isChecked)
             "skin_import" -> onSkinImportClick((preference as SwitchPreference).isChecked)
-            "customize_dynamic" -> onCustomDynamicClick()
             "text_fold" -> onTextFoldClick()
             "misc_remove_ads" -> run { MiscRemoveAdsDialog(activity, prefs).show(); true }
+            "playback_speed_override" -> onPlaybackSpeedOverrideClick()
+            "default_playback_speed" -> onDefaultPlaybackSpeedClick()
+            "customize_dynamic" -> onCustomDynamicClick()
             else -> false
         }
     }
