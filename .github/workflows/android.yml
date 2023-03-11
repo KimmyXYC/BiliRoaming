@@ -158,8 +158,8 @@ jobs:
               channel_id_me = int(os.environ["CHANNEL_ID_ME"])
               document = os.environ["PATCHED_APK"]
               msg_p1 = "#哔哩漫游 #内置版"
-              msg_p2 = f"```{os.environ["MESSAGE"]}```"
-              msg_p3 = f"By `{os.environ["AUTHOR"]}`"
+              msg_p2 = f'`{os.environ["MESSAGE"]}`'
+              msg_p3 = f'By `{os.environ["AUTHOR"]}`'
               caption = "{}\n{}\n{}".format(msg_p1, msg_p2, msg_p3)
               module = InputMediaDocument(media=os.environ["MODULE_APK"], caption="")
               patched = InputMediaDocument(media=os.environ["PATCHED_APK"], caption=caption)
