@@ -79,8 +79,6 @@ jobs:
             ```By `${{ github.event.head_commit.author.name }}`
             See commit detail [here](${{ github.event.head_commit.url }})
             Snapshot apk is attached \(unsupported by TAICHI\)
-
-            _Support custom skins\, downloading subtitles\, custom text folding and copying the current access\_key_
         run: |
           ESCAPED=`python3 -c 'import json,os,urllib.parse; print(urllib.parse.quote(json.dumps(os.environ["COMMIT_MESSAGE"])))'`
           curl -v "https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup?chat_id=${CHANNEL_ID}&media=%5B%7B%22type%22:%22document%22,%20%22media%22:%22attach://release%22,%22parse_mode%22:%22MarkdownV2%22,%22caption%22:${ESCAPED}%7D%5D"  -F release="@$FILE"
@@ -133,6 +131,8 @@ jobs:
       - name: Send to Telegram
         shell: python
         env:
+          MESSAGE: ${{ github.event.head_commit.message }}
+          AUTHOR: ${{ github.event.head_commit.author.name }}
           API_ID: ${{ secrets.TELEGRAM_API_ID }}
           API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
           CHANNEL_ID: ${{ secrets.TELEGRAM_TO }}
@@ -157,9 +157,10 @@ jobs:
               channel_id = int(os.environ["CHANNEL_ID"])
               channel_id_me = int(os.environ["CHANNEL_ID_ME"])
               document = os.environ["PATCHED_APK"]
-              msg_p1 = "#哔哩漫游 #傻瓜版"
-              msg_p2 = f"哔哩漫游傻瓜版自动打包\n本消息由github action自动发布"
-              caption = "{}\n{}".format(msg_p1, msg_p2)
+              msg_p1 = "#哔哩漫游 #内置版"
+              msg_p2 = f"```{os.environ["MESSAGE"]}```"
+              msg_p3 = f"By `{os.environ["AUTHOR"]}`"
+              caption = "{}\n{}\n{}".format(msg_p1, msg_p2, msg_p3)
               module = InputMediaDocument(media=os.environ["MODULE_APK"], caption="")
               patched = InputMediaDocument(media=os.environ["PATCHED_APK"], caption=caption)
               await bot.send_media_group(
