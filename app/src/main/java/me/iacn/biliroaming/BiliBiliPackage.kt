@@ -43,6 +43,7 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
         Log.d(result.copy { clearMapIds() }.print())
         result
     }
+    val hookInfo get() = mHookInfo
     val bangumiApiResponseClass by Weak { mHookInfo.bangumiApiResponse from mClassLoader }
     val rxGeneralResponseClass by Weak { "com.bilibili.okretro.call.rxjava.RxGeneralResponse" from mClassLoader }
     val fastJsonClass by Weak { mHookInfo.fastJson.class_ from mClassLoader }
@@ -107,6 +108,13 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
     val shareClickResultClass by Weak { "com.bilibili.lib.sharewrapper.online.api.ShareClickResult" from mClassLoader }
     val kanbanCallbackClass by Weak { mHookInfo.kanBan.class_ from mClassLoader }
     val toastHelperClass by Weak { mHookInfo.toastHelper.class_ from mClassLoader }
+    val toolbarServiceClass by Weak { mHookInfo.toolbarService.class_ from mClassLoader }
+    val miniPlayMethod get() = mHookInfo.toolbarService.miniPlay.orNull
+    val superMenuClass by Weak { mHookInfo.superMenu.class_ from mClassLoader }
+    val menuItemClickListenerClass by Weak { mHookInfo.superMenu.menuItemClickListener from mClassLoader }
+    val menuItemImplClass by Weak { mHookInfo.superMenu.menuItemImpl from mClassLoader }
+    val showMethod get() = mHookInfo.superMenu.show.orNull
+    val clickListenerField get() = mHookInfo.superMenu.clickListener.orNull
     val biliAccountsClass by Weak { mHookInfo.biliAccounts.class_ from mClassLoader }
     val networkExceptionClass by Weak { "com.bilibili.lib.moss.api.NetworkException" from mClassLoader }
     val brotliInputStreamClass by Weak { mHookInfo.brotliInputStream from mClassLoader }
@@ -236,6 +244,8 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
     fun theseusPlayerSetSpeed() = mHookInfo.playerCoreService.theseusPlayerSetSpeed.orNull
 
     fun playerOnPrepare() = mHookInfo.playerCoreService.playerOnPrepare.orNull
+    
+    fun updateSpeed() = mHookInfo.playerCoreService.updateSpeed.orNull
 
     fun urlField() = mHookInfo.okHttp.request.url.orNull
 
@@ -292,6 +302,8 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
     fun onOperateClick() = mHookInfo.onOperateClick.orNull
 
     fun getContentString() = mHookInfo.getContentString.orNull
+
+    fun setLineToAllCount() = mHookInfo.setLineToAllCount.orNull
 
     fun check() = mHookInfo.updateInfoSupplier.check.orNull
 
@@ -431,6 +443,302 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
                                 && it.type == Int::class.javaPrimitiveType
                     }
                 }.forEach { ids[it.name] = it.get(null) as Int }
+            }
+            toolbarService = toolbarService {
+                val bangumiActivityClass =
+                    "com.bilibili.bangumi.ui.page.detail.BangumiDetailActivityV3".from(classloader)
+                        ?: return@toolbarService
+                val onStopMethod = bangumiActivityClass.getDeclaredMethod("onStop")
+                val onStopMethodIndex = dexHelper.encodeMethodIndex(onStopMethod)
+                val contextClassIndex = dexHelper.encodeClassIndex(Context::class.java)
+                val miniPlayMethod = dexHelper.findMethodInvoking(
+                    onStopMethodIndex,
+                    -1,
+                    1,
+                    "VL",
+                    -1,
+                    longArrayOf(contextClassIndex),
+                    null,
+                    null,
+                    true
+                ).asSequence().firstNotNullOfOrNull {
+                    dexHelper.decodeMethodIndex(it)
+                } ?: return@toolbarService
+                val toolbarServiceClass = miniPlayMethod.declaringClass
+                class_ = class_ { name = toolbarServiceClass.name }
+                miniPlay = method { name = miniPlayMethod.name }
+            }
+            superMenu = superMenu {
+                val mWebActivityClass = "tv.danmaku.bili.ui.webview.MWebActivity".from(classloader)
+                        ?: return@superMenu
+                val mWebActivityIndex = dexHelper.encodeClassIndex(mWebActivityClass)
+                val showMethod = dexHelper.findMethodUsingString(
+                        "open_browser",
+                        false,
+                        -1,
+                        -1,
+                        null,
+                        mWebActivityIndex,
+                        null,
+                        null,
+                        null,
+                        true
+                ).firstOrNull()?.run {
+                    dexHelper.findMethodInvoking(
+                            this,
+                            -1,
+                            0,
+                            "V",
+                            -1,
+                            null,
+                            null,
+                            null,
+                            true
+                    ).firstOrNull()?.let {
+                        dexHelper.decodeMethodIndex(it)
+                    }
+                } ?: return@superMenu
+                val superMenuClass = showMethod.declaringClass
+                val clickListenerField = superMenuClass.declaredFields.find { f ->
+                    f.type.isInterface && f.type.let { c ->
+                        c.declaredMethods.size == 1 && c.declaredMethods[0].let { m ->
+                            m.returnType == Boolean::class.javaPrimitiveType && m.parameterTypes.let {
+                                it.size == 1 && it[0].isInterface
+                            }
+                        }
+                    }
+                } ?: return@superMenu
+                val menuItemImplClass = dexHelper.findMethodUsingString(
+                        "MenuItemImpl{mId='",
+                        false,
+                        -1,
+                        -1,
+                        null,
+                        -1,
+                        null,
+                        null,
+                        null,
+                        true
+                ).firstOrNull()?.let {
+                    dexHelper.decodeMethodIndex(it)
+                }?.declaringClass ?: return@superMenu
+                class_ = class_ { name = showMethod.declaringClass.name }
+                menuItemClickListener = class_ { name = clickListenerField.type.name }
+                menuItemImpl = class_ { name = menuItemImplClass.name }
+                show = method { name = showMethod.name }
+                clickListener = field { name = clickListenerField.name }
+            }
+            playbackSpeed = playbackSpeed {
+                val adapterClasses = dexHelper.findMethodUsingString(
+                    "player.player.choose-speed.0.player",
+                    false,
+                    -1,
+                    -1,
+                    null,
+                    -1,
+                    null,
+                    null,
+                    null,
+                    false
+                ).map { dexHelper.decodeMethodIndex(it)?.declaringClass }.filterNotNull()
+                    .mapNotNull {
+                        it.declaredFields.firstNotNullOfOrNull { f ->
+                            if (View.OnClickListener::class.java.isAssignableFrom(f.type)) {
+                                f.type
+                            } else null
+                        }
+                    }
+                val adapterFields = adapterClasses.mapNotNull {
+                    it.findFirstFieldByExactTypeOrNull(FloatArray::class.java)
+                }
+                adapterClasses.zip(adapterFields).map { (c, f) ->
+                    speedAdapter {
+                        class_ = class_ { name = c.name }
+                        speedArray = field { name = f.name }
+                    }
+                }.let { speedAdapter.addAll(it) }
+                storySuperMenu = storySuperMenu {
+                    val clazz = "com.bilibili.video.story.action.StorySuperMenu".from(classloader)
+                        ?: dexHelper.findMethodUsingString(
+                            "story_setting_normal_share",
+                            false,
+                            -1,
+                            -1,
+                            null,
+                            -1,
+                            null,
+                            null,
+                            null,
+                            true
+                        ).firstOrNull()?.let { dexHelper.decodeMethodIndex(it)?.declaringClass }
+                        ?: return@storySuperMenu
+                    val field = clazz.findFirstFieldByExactTypeOrNull(FloatArray::class.java)
+                        ?: return@storySuperMenu
+                    class_ = class_ { name = clazz.name }
+                    speedArray = field { name = field.name }
+                }
+                menuFuncSegment = menuFuncSegment {
+                    val clazz = "tv.danmaku.bili.ui.video.videodetail.function.MenuFuncSegment"
+                        .from(classloader) ?: dexHelper.findMethodUsingString(
+                        "pref_key_share_listen_show_new",
+                        false,
+                        -1,
+                        -1,
+                        null,
+                        -1,
+                        null,
+                        null,
+                        null,
+                        true
+                    ).firstOrNull()?.let { dexHelper.decodeMethodIndex(it)?.declaringClass }
+                    ?: return@menuFuncSegment
+                    val field = clazz.findFirstFieldByExactTypeOrNull(FloatArray::class.java)
+                        ?: return@menuFuncSegment
+                    class_ = class_ { name = clazz.name }
+                    speedArray = field { name = field.name }
+                }
+                newShareService = newShareService {
+                    val clazz =
+                        "com.bilibili.bangumi.logic.page.detail.service.refactor.NewShareService"
+                            .from(classloader) ?: dexHelper.findMethodUsingString(
+                            "pgc.pgc-video-detail.half-player-more-option.0.click",
+                            false,
+                            -1,
+                            -1,
+                            null,
+                            -1,
+                            null,
+                            null,
+                            null,
+                            true
+                        ).firstOrNull()?.let { dexHelper.decodeMethodIndex(it)?.declaringClass }
+                        ?: return@newShareService
+                    val field = clazz.findFirstFieldByExactTypeOrNull(FloatArray::class.java)
+                        ?: return@newShareService
+                    class_ = class_ { name = clazz.name }
+                    speedArray = field { name = field.name }
+                }
+                val settingClasses = dexHelper.findMethodUsingString(
+                    "player.player.full-more.speed.player",
+                    false,
+                    -1,
+                    -1,
+                    null,
+                    -1,
+                    null,
+                    null,
+                    null,
+                    false
+                ).map { dexHelper.decodeMethodIndex(it)?.declaringClass }.filterNotNull()
+                val settingFields = settingClasses.map {
+                    Pair(
+                        it.findFirstFieldByExactTypeOrNull(FloatArray::class.java),
+                        it.findFirstFieldByExactTypeOrNull(IntArray::class.java)
+                    )
+                }
+                settingClasses.zip(settingFields).mapNotNull {
+                    val clazz = it.first
+                    val (fSpeed, fId) = it.second
+                    if (fSpeed == null || fId == null) {
+                        null
+                    } else {
+                        playSpeedSetting {
+                            class_ = class_ { name = clazz.name }
+                            speedArray = field { name = fSpeed.name }
+                            speedTextIdArray = field { name = fId.name }
+                        }
+                    }
+                }.let { playSpeedSetting.addAll(it) }
+                podcastSpeedSeekBar = podcastSpeedSeekBar {
+                    val clazz = "com.bilibili.music.podcast.view.PodcastSpeedSeekBar"
+                        .from(classloader) ?: return@podcastSpeedSeekBar
+                    val speedArrayField =
+                        clazz.findFirstFieldByExactTypeOrNull(FloatArray::class.java)
+                            ?: return@podcastSpeedSeekBar
+                    val speedNameListField = clazz.findFirstFieldByExactTypeOrNull(List::class.java)
+                        ?: return@podcastSpeedSeekBar
+                    class_ = class_ { name = clazz.name }
+                    speedArray = field { name = speedArrayField.name }
+                    speedNameList = field { name = speedNameListField.name }
+                }
+                musicPlayerPanel = absMusicPlayerPanelSegment {
+                    val clazz = "com.bilibili.music.podcast.segment.AbsMusicPlayerPanelSegment"
+                        .from(classloader) ?: dexHelper.findMethodUsingString(
+                        "turn_left",
+                        false,
+                        -1,
+                        -1,
+                        null,
+                        -1,
+                        null,
+                        null,
+                        null,
+                        true
+                    ).firstOrNull()?.let { dexHelper.decodeMethodIndex(it)?.declaringClass }
+                    ?: return@absMusicPlayerPanelSegment
+                    val field = clazz.findFirstFieldByExactTypeOrNull(FloatArray::class.java)
+                        ?: return@absMusicPlayerPanelSegment
+                    class_ = class_ { name = clazz.name }
+                    speedArray = field { name = field.name }
+                }
+                val widgetClasses = dexHelper.findMethodUsingString(
+                    "player.player.speed.0.player",
+                    false,
+                    -1,
+                    -1,
+                    null,
+                    -1,
+                    null,
+                    null,
+                    null,
+                    false
+                ).map { dexHelper.decodeMethodIndex(it)?.declaringClass }.filterNotNull()
+                val setTextMethod =
+                    TextView::class.java.getDeclaredMethod("setText", CharSequence::class.java)
+                val setTextMethodIndex = dexHelper.encodeMethodIndex(setTextMethod)
+                val updateMethods = widgetClasses.mapNotNull { c ->
+                    dexHelper.findMethodInvoked(
+                        setTextMethodIndex,
+                        -1,
+                        -1,
+                        null,
+                        dexHelper.encodeClassIndex(c),
+                        null,
+                        null,
+                        null,
+                        true
+                    ).firstOrNull()?.let { dexHelper.decodeMethodIndex(it) }
+                }
+                widgetClasses.zip(updateMethods).map { (c, m) ->
+                    playerSpeedWidget {
+                        class_ = class_ { name = c.name }
+                        update = method { name = m.name }
+                    }
+                }.let { playerSpeedWidget.addAll(it) }
+                playerSettingService = playerSettingService {
+                    val clazz = dexHelper.findMethodUsingString(
+                        "could not remove all key for scope: ",
+                        false,
+                        -1,
+                        -1,
+                        null,
+                        -1,
+                        null,
+                        null,
+                        null,
+                        true
+                    ).firstOrNull()?.let {
+                        dexHelper.decodeMethodIndex(it)?.declaringClass
+                    } ?: return@playerSettingService
+                    val getFloatMethod = clazz.declaredMethods.find { m ->
+                        val floatType = Float::class.javaPrimitiveType
+                        m.returnType == floatType && m.parameterTypes.let {
+                            it.size == 2 && it[0] == String::class.java && it[1] == floatType
+                        }
+                    } ?: return@playerSettingService
+                    class_ = class_ { name = clazz.name }
+                    getFloat = method { name = getFloatMethod.name }
+                }
             }
 
             bangumiApiResponse = class_ {
@@ -1157,6 +1465,22 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
                 onSeekComplete = method { name = onSeekCompleteMethod.name }
                 seekCompleteListener =
                     class_ { name = onSeekCompleteMethod.declaringClass.name }
+                updateSpeed = method {
+                    name = dexHelper.findMethodUsingString(
+                        "[player] player speed type=",
+                        false,
+                        -1,
+                        -1,
+                        null,
+                        -1,
+                        null,
+                        null,
+                        null,
+                        true
+                    ).asSequence().firstNotNullOfOrNull {
+                        dexHelper.decodeMethodIndex(it)
+                    }?.name ?: return@method
+                }
                 getPlaybackSpeed = method {
                     name = dexHelper.findMethodUsingString(
                         "player_key_video_speed",
@@ -1537,6 +1861,50 @@ class BiliBiliPackage constructor(private val mClassLoader: ClassLoader, mContex
                             .contains("ActivityEntrance")
                     }?.name ?: return@method
                 }
+            }
+            setLineToAllCount = method {
+                val ellipsizingTextViewClass =
+                    "com.bilibili.bplus.followingcard.widget.EllipsizingTextView"
+                        .from(classloader) ?: return@method
+                name = ellipsizingTextViewClass.declaredMethods
+                    .find { it.name == "setLineToAllCount" }?.name
+                    ?: run {
+                        val setOnClickListenerIndex = dexHelper.encodeMethodIndex(
+                            View::class.java.getMethod(
+                                "setOnClickListener",
+                                View.OnClickListener::class.java
+                            )
+                        )
+                        val ellipsizingTextViewIndex =
+                            dexHelper.encodeClassIndex(ellipsizingTextViewClass)
+                        val viewGroupIndex = dexHelper.encodeClassIndex(ViewGroup::class.java)
+                        val listIndex = dexHelper.encodeClassIndex(List::class.java)
+                        dexHelper.findMethodInvoked(
+                            setOnClickListenerIndex,
+                            -1,
+                            -1,
+                            "LLL",
+                            -1,
+                            longArrayOf(viewGroupIndex, listIndex),
+                            null,
+                            null,
+                            false
+                        ).asSequence().firstNotNullOfOrNull {
+                            dexHelper.findMethodInvoking(
+                                it,
+                                -1,
+                                -1,
+                                "VI",
+                                ellipsizingTextViewIndex,
+                                null,
+                                null,
+                                null,
+                                true
+                            ).asSequence().firstNotNullOfOrNull { idx ->
+                                dexHelper.decodeMethodIndex(idx) as? Method
+                            }
+                        }
+                    }?.name ?: return@method
             }
             kanBan = kanBan {
                 val statusClass =
