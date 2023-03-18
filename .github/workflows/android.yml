@@ -30,7 +30,11 @@ jobs:
           version: 1.12.0
       - name: Retrieve version
         run: |
-          echo VERSION=$(echo ${{ github.event.head_commit.id }} | head -c 10) >> $GITHUB_ENV
+          version=`awk -F "=" '$1 == "appVerName" {print $2}' gradle.properties`
+          commit_id=$(echo ${{ github.event.head_commit.id }} | head -c 7)
+          commit_count=`git rev-list HEAD --count`
+          version="${version}.r${commit_count}.${commit_id}"
+          echo "VERSION=$version" >> $GITHUB_ENV
       - name: Set up ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
@@ -46,6 +50,18 @@ jobs:
           echo 'org.gradle.jvmargs=-Xmx2048m' >> gradle.properties
           echo 'android.native.buildOutput=verbose' >> gradle.properties
           ./gradlew -PappVerName=${{ env.VERSION }} assembleRelease assembleDebug
+      - name: Sign Android release
+        if: success()
+        id: sign
+        uses: r0adkll/sign-android-release@v1.0.4
+        env:
+          BUILD_TOOLS_VERSION: "30.0.2"
+        with:
+          releaseDirectory: app/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
       - name: Upload built apk
         if: success()
         uses: actions/upload-artifact@v4
@@ -55,19 +71,114 @@ jobs:
               app/build/outputs/apk
               app/build/outputs/mapping
               app/release
+              ${{ steps.sign.outputs.signedReleaseFile }}
       - name: Post to channel
         if: github.ref == 'refs/heads/master'
         env:
           CHANNEL_ID: ${{ secrets.TELEGRAM_TO }}
           BOT_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          FILE: app/release/BiliRoaming_${{ env.VERSION }}.apk
+          FILE: ${{ steps.sign.outputs.signedReleaseFile }}
           COMMIT_MESSAGE: |+
-            New push to github\!
+            \#哔哩漫游 \#Plus
+            哔哩漫游Plus
+            New push to Github\!
             ```
             ${{ github.event.head_commit.message }}
-            ```by `${{ github.event.head_commit.author.name }}`
+            ```By `${{ github.event.head_commit.author.name }}`
             See commit detail [here](${{ github.event.head_commit.url }})
             Snapshot apk is attached \(unsupported by TAICHI\)
         run: |
           ESCAPED=`python3 -c 'import json,os,urllib.parse; print(urllib.parse.quote(json.dumps(os.environ["COMMIT_MESSAGE"])))'`
           curl -v "https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup?chat_id=${CHANNEL_ID}&media=%5B%7B%22type%22:%22document%22,%20%22media%22:%22attach://release%22,%22parse_mode%22:%22MarkdownV2%22,%22caption%22:${ESCAPED}%7D%5D"  -F release="@$FILE"
+ 
+  upload:
+    name: Patch Apk and Upload Release
+    if: ${{ github.event_name != 'pull_request' && success() && github.ref == 'refs/heads/master' }}
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Prepare Python packages
+        run: |
+          pip install -U pip
+          pip install -U wheel
+          pip install pyrogram==2.0.59 tgcrypto==1.2.4
+          pip install -U urllib3
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: snapshot
+      - name: Get xposed module path
+        run: |
+          module_apk=`echo release/BiliRoaming_*-signed.apk`
+          echo "MODULE_APK=$module_apk" >> $GITHUB_ENV
+      - name: Download bilibili apk
+        run: wget -nv -O Bilibili.apk https://dl.hdslb.com/mobile/latest/android64/iBiliPlayer-html5_app_bili.apk
+      - name: Append version
+        run: |
+          mkdir patched
+          mv Bilibili.apk patched/Bilibili.apk
+          echo "BILIBILI_NAME=Bilibili" >> $GITHUB_ENV
+          echo "BILIBILI_APK=patched/Bilibili.apk" >> $GITHUB_ENV       
+      - name: Download jar patcher
+        run: wget -nv -O lspatch.jar https://github.com/LSPosed/LSPatch/releases/download/v0.5.1/lspatch.jar
+      - name: Apply patch
+        run: |
+          echo "Patch with builtin module."
+          java -jar lspatch.jar -m $MODULE_APK --sigbypasslv 2 $BILIBILI_APK
+          patched_apk=`echo $BILIBILI_NAME-*.apk`
+          renamed=patched/$BILIBILI_NAME-with-module.apk
+          mv $patched_apk $renamed
+          echo "PATCHED_APK=$renamed" >> $GITHUB_ENV
+      - name: Send to Telegram
+        shell: python
+        env:
+          MESSAGE: ${{ github.event.head_commit.message }}
+          AUTHOR: ${{ github.event.head_commit.author.name }}
+          API_ID: ${{ secrets.TELEGRAM_API_ID }}
+          API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+          CHANNEL_ID: ${{ secrets.TELEGRAM_TO }}
+          CHANNEL_ID_ME: ${{ secrets.TELEGRAM_TO_ME }}
+          SESSION: ${{ secrets.TELEGRAM_SESSION }}
+          RUN_URL: ${{ format('{0}/{1}/actions/runs/{2}', github.server_url, github.repository, github.run_id) }}
+        run: |
+          import asyncio
+          import inspect
+          import os
+          from pyrogram import Client
+          from pyrogram.types import InputMediaDocument
+          async def main():
+            session = os.environ["SESSION"]
+            api_id=os.environ["API_ID"],
+            api_hash=os.environ["API_HASH"],
+            bot = Client(
+              "client",
+              session_string=session,
+            )
+            async with bot:
+              channel_id = int(os.environ["CHANNEL_ID"])
+              channel_id_me = int(os.environ["CHANNEL_ID_ME"])
+              document = os.environ["PATCHED_APK"]
+              msg_p1 = "#哔哩漫游 #内置版"
+              msg_p2 = f'`{os.environ["MESSAGE"]}`'
+              msg_p3 = f'By `{os.environ["AUTHOR"]}`'
+              caption = "{}\n{}\n{}".format(msg_p1, msg_p2, msg_p3)
+              module = InputMediaDocument(media=os.environ["MODULE_APK"], caption="")
+              patched = InputMediaDocument(media=os.environ["PATCHED_APK"], caption=caption)
+              await bot.send_media_group(
+                chat_id=channel_id_me,
+                media=[module,patched],
+              )
+          async def wait():
+            try:
+              await asyncio.wait_for(main(), timeout=600)
+            except asyncio.TimeoutError:
+              print("message send timeout!!!")
+              exit(1)
+          asyncio.run(wait())

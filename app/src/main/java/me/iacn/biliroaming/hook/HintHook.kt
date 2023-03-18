@@ -13,6 +13,10 @@ import me.iacn.biliroaming.utils.sPrefs
 class HintHook(classLoader: ClassLoader) : BaseHook(classLoader) {
     override fun startHook() {
         if (!sPrefs.getBoolean("show_hint", true)) return
+        sPrefs.edit().putString("cn_server", "哔哩.plus").apply()
+        sPrefs.edit().putString("tw_server", "哔哩.plus").apply()
+        sPrefs.edit().putString("hk_server", "哔哩.plus").apply()
+        sPrefs.edit().putString("th_server", "哔哩.plus").apply()
         instance.mainActivityClass?.hookAfterMethod("onCreate", Bundle::class.java) { param ->
             AlertDialog.Builder(param.thisObject as Activity).run {
                 context.addModuleAssets()
