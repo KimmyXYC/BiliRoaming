@@ -3,17 +3,20 @@
 
     <PreferenceCategory android:title="@string/main_category">
         <SwitchPreference
+            android:defaultValue="true"
             android:key="main_func"
             android:summary="@string/main_func_summary"
             android:title="@string/main_func_title" />
 
         <SwitchPreference
+            android:defaultValue="true"
             android:dependency="main_func"
             android:key="allow_download"
             android:summary="@string/allow_download_summary"
             android:title="@string/allow_download_title" />
 
         <SwitchPreference
+            android:defaultValue="true"
             android:dependency="allow_download"
             android:key="fix_download"
             android:summary="@string/fix_download_summary"
@@ -26,6 +29,7 @@
             android:title="@string/custom_server_title" />
 
         <SwitchPreference
+            android:defaultValue="true"
             android:dependency="main_func"
             android:key="allow_mini_play"
             android:title="@string/allow_mini_play_title" />
@@ -64,6 +68,7 @@
             android:summary="@string/full_splash_summary"
             android:title="@string/full_splash_title" />
         <SwitchPreference
+            android:defaultValue="true"
             android:key="music_notification"
             android:summary="@string/music_notification_summary"
             android:title="@string/music_notification_title" />
@@ -76,6 +81,7 @@
             android:summary="@string/custom_subtitle_summary"
             android:title="@string/custom_subtitle_title" />
         <SwitchPreference
+            android:defaultValue="true"
             android:key="disable_story_full"
             android:summary="@string/disable_story_full_summary"
             android:title="@string/disable_story_full_title" />
@@ -93,22 +99,26 @@
 
     <PreferenceCategory android:title="@string/miscellaneous_category">
         <SwitchPreference
+            android:defaultValue="true"
             android:key="teenagers_mode_dialog"
             android:summary="@string/teenagers_mode_dialog_summary"
             android:title="@string/teenagers_mode_dialog_title" />
 
         <SwitchPreference
+            android:defaultValue="true"
             android:key="comment_copy"
             android:summary="@string/comment_copy_summary"
             android:title="@string/comment_copy_title" />
 
         <SwitchPreference
+            android:defaultValue="true"
             android:dependency="comment_copy"
             android:key="comment_copy_enhance"
             android:summary="@string/comment_copy_enhance_summary"
             android:title="@string/comment_copy_enhance_title" />
 
         <SwitchPreference
+            android:defaultValue="true"
             android:key="mini_program"
             android:summary="@string/mini_program_summary"
             android:title="@string/mini_program_title" />
@@ -119,6 +129,7 @@
             android:title="@string/auto_like_title" />
 
         <SwitchPreference
+            android:defaultValue="true"
             android:key="enable_av"
             android:summary="@string/enable_av_summary"
             android:title="@string/enable_av_title" />
@@ -134,11 +145,13 @@
             android:title="@string/revert_live_room_feed_title" />
 
         <SwitchPreference
+            android:defaultValue="true"
             android:key="replace_story_video"
             android:summary="@string/replace_story_video_summary"
             android:title="@string/replace_story_video_title" />
 
         <SwitchPreference
+            android:defaultValue="true"
             android:key="purify_share"
             android:summary="@string/purify_share_summary"
             android:title="@string/purify_share_title" />
@@ -155,6 +168,7 @@
             android:title="@string/fix_space_title" />
 
         <SwitchPreference
+            android:defaultValue="true"
             android:key="play_arc_conf"
             android:summary="@string/play_arc_conf_summary"
             android:title="@string/play_arc_conf_title" />
@@ -165,12 +179,26 @@
             android:summary="@string/force_browser_summary"
             android:title="@string/force_browser_title" />
 
+        <Preference
+            android:key="text_fold"
+            android:summary="@string/text_fold_summary"
+            android:title="@string/text_fold_title" />
+
         <SwitchPreference
+            android:defaultValue="true"
+            android:dependency="main_func"
+            android:key="enable_download_subtitle"
+            android:summary="@string/enable_download_subtitle_summary"
+            android:title="@string/enable_download_subtitle_title" />
+
+        <SwitchPreference
+            android:defaultValue="true"
             android:key="auto_generate_subtitle"
             android:summary="@string/generate_subtitle_summary"
             android:title="@string/generate_subtitle_title" />
 
         <SwitchPreference
+            android:defaultValue="true"
             android:key="forbid_switch_live_room"
             android:summary="@string/forbid_switch_live_room_summary"
             android:title="@string/forbid_switch_live_room_title" />
@@ -188,6 +216,16 @@
         <SwitchPreference
             android:key="block_update"
             android:title="@string/block_update_title" />
+
+        <Preference
+            android:key="playback_speed_override"
+            android:summary="@string/playback_speed_override_summary"
+            android:title="@string/playback_speed_override_title" />
+
+        <Preference
+            android:key="default_playback_speed"
+            android:summary="@string/default_playback_speed_summary"
+            android:title="@string/default_playback_speed_title" />
 
         <SwitchPreference
             android:key="save_comment_image"
@@ -262,7 +300,7 @@
         android:title="@string/hidden_group">
 
         <SwitchPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="hidden"
             android:summary="@string/hidden_summary"
             android:title="@string/hidden_title" />
@@ -278,6 +316,12 @@
             android:title="@string/customize_bottom_bar_title" />
         <SwitchPreference
             android:dependency="hidden"
+            android:key="add_channel"
+            android:summary="@string/add_channel_summary"
+            android:title="@string/add_channel_title" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:dependency="hidden"
             android:key="purify_game"
             android:summary="@string/purify_game_summary"
             android:title="@string/purify_game_title" />
@@ -291,6 +335,7 @@
             android:summary="@string/add_custom_button_summary"
             android:title="@string/add_custom_button_title" />
         <SwitchPreference
+            android:defaultValue="true"
             android:dependency="hidden"
             android:key="purify_drawer_reddot"
             android:summary="@string/purify_drawer_reddot_summary"
@@ -306,6 +351,7 @@
             android:summary="@string/drawer_style_summary"
             android:title="@string/drawer_style_title" />
         <SwitchPreference
+            android:defaultValue="true"
             android:dependency="hidden"
             android:key="purify_splash"
             android:summary="@string/purify_splash_summary"
@@ -330,6 +376,7 @@
             android:summary="@string/customize_home_recommend_summary"
             android:title="@string/customize_home_recommend_title" />
         <SwitchPreference
+            android:defaultValue="true"
             android:dependency="hidden"
             android:key="add_bangumi"
             android:summary="@string/add_bangumi_summary"
@@ -345,6 +392,7 @@
             android:summary="@string/add_korea_summary"
             android:title="@string/add_korea_title" />
         <SwitchPreference
+            android:defaultValue="true"
             android:dependency="hidden"
             android:key="search_area_bangumi"
             android:summary="@string/search_area_summary"
@@ -377,11 +425,13 @@
             android:summary="@string/customize_space_summary"
             android:title="@string/customize_space_title" />
         <SwitchPreference
+            android:defaultValue="true"
             android:dependency="hidden"
             android:key="block_upper_recommend_ad"
             android:summary="@string/block_video_ad_summary"
             android:title="@string/block_video_ad_title" />
         <SwitchPreference
+            android:defaultValue="true"
             android:dependency="hidden"
             android:key="disable_try_watch_vip_quality"
             android:summary="@string/disable_try_watch_vip_quality_desc"
@@ -392,6 +442,7 @@
             android:summary="@string/customize_dynamic_summary"
             android:title="@string/customize_dynamic_title" />
         <SwitchPreference
+            android:defaultValue="true"
             android:dependency="hidden"
             android:key="remove_video_relate_promote"
             android:summary="@string/remove_video_relate_promote_summary"
@@ -407,6 +458,7 @@
             android:summary="@string/remove_video_relate_nothing_summary"
             android:title="@string/remove_video_relate_nothing_title" />
         <SwitchPreference
+            android:defaultValue="true"
             android:dependency="hidden"
             android:key="remove_video_UgcSeason"
             android:summary="@string/remove_video_UgcSeason_summary"
@@ -423,11 +475,29 @@
             android:title="@string/remove_video_cmd_dms_title" />
         <SwitchPreference
             android:dependency="hidden"
+            android:key="skin"
+            android:summary="@string/skin_summary"
+            android:title="@string/skin_title" />
+        <SwitchPreference
+            android:dependency="hidden"
+            android:key="skin_import"
+            android:summary="@string/skin_summary"
+            android:title="@string/skin_import_title" />
+
+        <Preference
+            android:dependency="hidden"
+            android:key="misc_remove_ads"
+            android:title="@string/misc_remove_ads_title" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:dependency="hidden"
             android:key="block_word_search"
             android:summary="@string/block_word_search_summary"
             android:title="@string/block_word_search_title" />
 
         <SwitchPreference
+            android:defaultValue="true"
             android:dependency="hidden"
             android:key="block_up_rcmd_ads"
             android:summary="@string/block_up_rcmd_ads_summary"

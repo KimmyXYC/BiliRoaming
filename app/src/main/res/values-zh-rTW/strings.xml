@@ -106,6 +106,8 @@
     <string name="add_bangumi_summary">在首頁標籤新增大陸/港澳台番劇分頁</string>
     <string name="add_movie_title">新增其他地區影視</string>
     <string name="add_movie_summary">在首頁標籤新增大陸/港澳台影視分頁</string>
+    <string name="add_channel_title">添加頻道按鈕</string>
+    <string name="add_channel_summary">在底欄添加頻道按鈕（重啟兩次生效）</string>
     <string name="custom_subtitle_title">自訂字幕樣式</string>
     <string name="custom_subtitle_summary">開啟後能自訂CC字幕樣式，但透明度跟隨彈幕透明度</string>
     <string name="customize_space_title">淨化使用者空間</string>
@@ -170,8 +172,29 @@
     <string name="keyword_group_name_channel">頻道</string>
     <string name="keyword_group_add">新增</string>
     <string name="keyword_group_delete">刪除</string>
+    <string name="skin_title">填寫自製主題</string>
+    <string name="skin_import_title">匯入自製主題</string>
+    <string name="skin_summary">重啟後，要等待十幾秒下載資源，然後再重啟（同時開啟時的優先度：匯入＞填寫）</string>
     <string name="keyword_group_clear">清空</string>
     <string name="prefs_save_success_and_reboot">儲存成功 重啟後生效</string>
+    <string name="text_fold_title">文本摺疊控制</string>
+    <string name="text_fold_summary">支持自訂評論及動態開始摺疊的文本行數</string>
+    <string name="text_fold_comment_max_lines_title">評論開始摺疊行數</string>
+    <string name="text_fold_dyn_max_lines_title">動態開始摺疊行數</string>
+    <string name="text_fold_dyn_lines_to_all_title">動態全文閱讀觸發行數</string>
+    <string name="text_fold_line">%1$s行</string>
+    <string name="playback_speed_override_title">自訂播放速度列表</string>
+    <string name="playback_speed_override_summary">同時應用到影片及聽影片播放速度列表</string>
+    <string name="playback_speed_override_hint">空格分隔，例如：2 1.5 1，空表示預設</string>
+    <string name="playback_speed_override_invalid">輸入無效！</string>
+    <string name="playback_speed_override_must">必須包含預設倍速1！</string>
+    <string name="playback_speed_override_ok">重啟生效</string>
+    <string name="default_playback_speed_title">默認播放速度</string>
+    <string name="default_playback_speed_summary">僅應用到影片播放</string>
+    <string name="default_playback_speed_hint">例如：1.5，空表示預設</string>
+    <string name="misc_remove_ads_title">去廣告雜項</string>
+    <string name="remove_search_ads_title">移除搜尋推廣</string>
+    <string name="remove_comment_cm_title">移除評論頁頂部推廣橫條</string>
     <string name="remove_video_relate_promote_title">移除影片下方的相關推廣</string>
     <string name="remove_video_relate_promote_summary">移除影片下方的相關推廣，例如遊戲、課程、會員購、創作推廣等</string>
     <string name="remove_video_relate_only_av_title">僅展示UP主投稿影片</string>
@@ -201,6 +224,11 @@
     <string name="block_up_rcmd_ads_summary">封鎖影片播放過程中，浮窗出現的UP主推薦廣告</string>
     <string name="block_bangumi_page_ads_title">封鎖番劇頁面廣告</string>
     <string name="block_bangumi_page_ads_summary">封鎖番劇頁面彈窗廣告及會員購</string>
+    <string name="enable_download_subtitle_title">啟用字幕下載功能</string>
+    <string name="enable_download_subtitle_summary">需開啟解鎖番劇限製選項，此功能才會生效。功能入口：播放詳情頁右上角三點 -> 字幕下載。字幕加載完成後入口才能顯示。</string>
+
+
+
     <string name="generate_subtitle_title">生成簡中字幕</string>
     <string name="generate_subtitle_summary">根據繁體字幕自動生成簡體中文字幕</string>
     <string name="forbid_switch_live_room_title">禁止滑動切換直播間</string>

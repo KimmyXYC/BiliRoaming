@@ -6,7 +6,10 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Activity.RESULT_CANCELED
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -17,9 +20,12 @@ import android.os.Build
 import android.os.Bundle
 import android.preference.*
 import android.provider.MediaStore
+import android.text.InputType
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
@@ -82,9 +88,15 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             findPreference("danmaku_filter")?.onPreferenceClickListener = this
             findPreference("customize_accessKey")?.onPreferenceClickListener = this
             findPreference("share_log")?.onPreferenceClickListener = this
+            findPreference("skin")?.onPreferenceClickListener = this
+            findPreference("skin_import")?.onPreferenceClickListener = this
             findPreference("customize_drawer")?.onPreferenceClickListener = this
             findPreference("custom_link")?.onPreferenceClickListener = this
             findPreference("add_custom_button")?.onPreferenceChangeListener = this
+            findPreference("misc_remove_ads")?.onPreferenceClickListener = this
+            findPreference("text_fold")?.onPreferenceClickListener = this
+            findPreference("playback_speed_override")?.onPreferenceClickListener = this
+            findPreference("default_playback_speed")?.onPreferenceClickListener = this
             findPreference("customize_dynamic")?.onPreferenceClickListener = this
             checkCompatibleVersion()
             checkUpdate()
@@ -101,7 +113,7 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             scope.launch {
                 val result = fetchJson(url) ?: return@launch
                 val newestVer = result.optString("name")
-                if (newestVer.isNotEmpty() && BuildConfig.VERSION_NAME != newestVer) {
+                if (newestVer.isNotEmpty() && BuildConfig.VERSION_NAME.length < 10 && BuildConfig.VERSION_NAME != newestVer) {
                     findPreference("version").summary = "${BuildConfig.VERSION_NAME}（最新版$newestVer）"
                     (findPreference("about") as PreferenceCategory).addPreference(
                         Preference(
@@ -122,6 +134,7 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
         private fun checkCompatibleVersion() {
             val versionCode = getVersionCode(packageName)
             var supportMusicNotificationHook = true
+            val supportAddChannel = versionCode >= 6270000
             var supportCustomizeTab = true
             val supportFullSplash = try {
                 instance.splashInfoClass?.getMethod("getMode") != null
@@ -168,6 +181,9 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             }
             if (!supportTeenagersMode) {
                 disablePreference("teenagers_mode_dialog")
+            }
+            if (!supportAddChannel) {
+                disablePreference("add_channel")
             }
             if (!supportCustomizeTab) {
                 disablePreference("customize_home_tab_title")
@@ -315,6 +331,20 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
                     } catch (e: Exception) {
                         Log.toast("${e.message}", alsoLog = true)
                     }
+                }
+                SKIN_IMPORT -> {
+                    val file = File(currentContext.filesDir, "skin.json")
+                    val uri = data?.data
+                    if (resultCode == RESULT_CANCELED || uri == null) return
+                    try {
+                        file.outputStream().use { out ->
+                            activity.contentResolver.openInputStream(uri)?.copyTo(out)
+                        }
+                    } catch (e: Exception) {
+                        Log.e(e)
+                        Log.toast(e.message ?: "未知错误", true)
+                    }
+                    Log.toast("保存成功 重启两次后生效", true)
                 }
             }
 
@@ -497,6 +527,15 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
                     it.setText(s)
                     it.hint = ""
                 }
+                view.findViewById<Button>(R.id.copy_key).run {
+                    visibility = View.VISIBLE
+                    setOnClickListener {
+                        ClipData.newPlainText("", instance.accessKey ?: "").let {   
+                            activity.getSystemService(ClipboardManager::class.java)
+                                .setPrimaryClip(it)
+                        }
+                    }
+                }
                 setTitle(R.string.customize_accessKey_title)
                 setView(view)
                 setPositiveButton(android.R.string.ok) { _, _ ->
@@ -648,6 +687,137 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             return true
         }
 
+        private fun onSkinImportClick(isChecked: Boolean): Boolean {
+            if (!isChecked) return true
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.type = "application/*"
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            try {
+                startActivityForResult(Intent.createChooser(intent, "选择文件"), SKIN_IMPORT)
+            } catch (ex: ActivityNotFoundException) {
+                Log.toast("请安装文件管理器")
+            }
+            return true
+        }
+
+        private fun onSkinClick(isChecked: Boolean): Boolean {
+            if (!isChecked) return true
+            val tv = EditText(activity)
+            tv.setText(sPrefs.getString("skin_json", "").toString())
+            AlertDialog.Builder(activity).run {
+                setTitle(R.string.skin_title)
+                setView(tv)
+                setPositiveButton(android.R.string.ok) { _, _ ->
+                    sPrefs.edit()
+                        .putString("skin_json", tv.text.toString())
+                        .apply()
+                    Log.toast("保存成功 重启两次后生效")
+                }
+                setNegativeButton(android.R.string.cancel, null)
+                setCancelable(false)
+                show()
+            }
+            return true
+        }
+
+        private fun onPlaybackSpeedOverrideClick(): Boolean {
+            val editText = EditText(activity)
+            editText.setHint(R.string.playback_speed_override_hint)
+            editText.setText(sPrefs.getString("playback_speed_override", null).orEmpty())
+            AlertDialog.Builder(activity)
+                .setTitle(R.string.playback_speed_override_title)
+                .setView(editText)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null)
+                .create().apply {
+                    setOnShowListener {
+                        getButton(Dialog.BUTTON_POSITIVE)?.setOnClickListener {
+                            val text = editText.text.toString().trim()
+                            if (text.isEmpty()) {
+                                sPrefs.edit().remove("playback_speed_override").apply()
+                                Log.toast(
+                                    activity.getString(R.string.playback_speed_override_ok),
+                                    true
+                                )
+                                dismiss()
+                                return@setOnClickListener
+                            }
+                            val speedList = text.runCatchingOrNull {
+                                split(' ').filter { it.isNotBlank() }
+                                    .map { it.toFloat() }.filter { it > 0F && it.isFinite() }
+                            }
+                            if (speedList == null) {
+                                Log.toast(
+                                    activity.getString(R.string.playback_speed_override_invalid),
+                                    true
+                                )
+                            } else if (!speedList.contains(1F)) {
+                                Log.toast(
+                                    activity.getString(R.string.playback_speed_override_must),
+                                    true
+                                )
+                            } else {
+                                val formatSpeedText = speedList.joinToString(" ")
+                                sPrefs.edit().putString("playback_speed_override", formatSpeedText)
+                                    .apply()
+                                Log.toast(
+                                    activity.getString(R.string.playback_speed_override_ok),
+                                    true
+                                )
+                                dismiss()
+                            }
+                        }
+                    }
+                }.show()
+            return true
+        }
+
+        private fun onDefaultPlaybackSpeedClick(): Boolean {
+            val editText = EditText(activity)
+            editText.setHint(R.string.default_playback_speed_hint)
+            editText.setText(
+                sPrefs.getFloat("default_playback_speed", 0F)
+                    .takeIf { it != 0F }?.toString().orEmpty()
+            )
+            editText.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+            AlertDialog.Builder(activity)
+                .setTitle(R.string.default_playback_speed_title)
+                .setView(editText)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null)
+                .create().apply {
+                    setOnShowListener {
+                        getButton(Dialog.BUTTON_POSITIVE)?.setOnClickListener {
+                            val text = editText.text.toString().trim()
+                            if (text.isEmpty()) {
+                                sPrefs.edit().remove("default_playback_speed").apply()
+                                Log.toast(
+                                    activity.getString(R.string.playback_speed_override_ok),
+                                    true
+                                )
+                                dismiss()
+                                return@setOnClickListener
+                            }
+                            val speed = text.toFloatOrNull()
+                            if (speed == null || speed <= 0F || !speed.isFinite()) {
+                                Log.toast(
+                                    activity.getString(R.string.playback_speed_override_invalid),
+                                    true
+                                )
+                            } else {
+                                sPrefs.edit().putFloat("default_playback_speed", speed).apply()
+                                Log.toast(
+                                    activity.getString(R.string.playback_speed_override_ok),
+                                    true
+                                )
+                                dismiss()
+                            }
+                        }
+                    }
+                }.show()
+            return true
+        }
+
         private fun onCustomDynamicClick(): Boolean {
             DynamicFilterDialog(activity, prefs).create().also { dialog ->
                 dialog.setOnShowListener {
@@ -658,6 +828,11 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
                     dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
                 }
             }.show()
+            return true
+        }
+
+        private fun onTextFoldClick(): Boolean {
+            TextFoldDialog(activity, prefs).show()
             return true
         }
 
@@ -676,6 +851,13 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             "share_log" -> onShareLogClick()
             "customize_drawer" -> onCustomizeDrawerClick()
             "custom_link" -> onCustomLinkClick()
+            "add_custom_button" -> onAddCustomButtonClick()
+            "skin" -> onSkinClick((preference as SwitchPreference).isChecked)
+            "skin_import" -> onSkinImportClick((preference as SwitchPreference).isChecked)
+            "text_fold" -> onTextFoldClick()
+            "misc_remove_ads" -> run { MiscRemoveAdsDialog(activity, prefs).show(); true }
+            "playback_speed_override" -> onPlaybackSpeedOverrideClick()
+            "default_playback_speed" -> onDefaultPlaybackSpeedClick()
             "customize_dynamic" -> onCustomDynamicClick()
             "danmaku_filter" -> onDanmakuFilterClick()
             else -> false
@@ -753,6 +935,7 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
         const val PREF_IMPORT = 2
         const val PREF_EXPORT = 3
         const val VIDEO_EXPORT = 4
+        const val SKIN_IMPORT = 5
     }
 
 }
