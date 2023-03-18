@@ -89,6 +89,7 @@ message PlayerCoreService {
   optional Method get_default_speed = 2;
   optional Method seek_to = 3;
   optional Method on_seek_complete = 4;
+  optional Method update_speed = 6;
   optional Class seek_complete_listener = 5;
 }
 
@@ -207,6 +208,78 @@ message BiliAccounts {
   optional Method get_access_key = 3;
 }
 
+message ToolbarService {
+  optional Class class = 1;
+  optional Method mini_play = 2;
+}
+
+message SuperMenu {
+  optional Class class = 1;
+  optional Class menu_item_click_listener = 2;
+  optional Class menu_item_impl = 3;
+  optional Method show = 4;
+  optional Field click_listener = 5;
+}
+
+message SpeedAdapter {
+  optional Class class = 1;
+  optional Field speed_array = 2;
+}
+
+message StorySuperMenu {
+  optional Class class = 1;
+  optional Field speed_array = 2;
+}
+
+message MenuFuncSegment {
+  optional Class class = 1;
+  optional Field speed_array = 2;
+}
+
+message NewShareService {
+  optional Class class = 1;
+  optional Field speed_array = 2;
+}
+
+message PlaySpeedSetting {
+  optional Class class = 1;
+  optional Field speed_array = 2;
+  optional Field speed_text_id_array = 3;
+}
+
+message PodcastSpeedSeekBar {
+  optional Class class = 1;
+  optional Field speed_array = 2;
+  optional Field speed_name_list = 3;
+}
+
+message AbsMusicPlayerPanelSegment {
+  optional Class class = 1;
+  optional Field speed_array = 2;
+}
+
+message PlayerSpeedWidget {
+  optional Class class = 1;
+  optional Method update = 2;
+}
+
+message PlayerSettingService {
+  optional Class class = 1;
+  optional Method get_float = 2;
+}
+
+message PlaybackSpeed {
+  repeated SpeedAdapter speed_adapter = 1;
+  optional StorySuperMenu story_super_menu = 2;
+  optional MenuFuncSegment menu_func_segment = 3;
+  optional NewShareService new_share_service = 4;
+  repeated PlaySpeedSetting play_speed_setting = 5;
+  optional PodcastSpeedSeekBar podcast_speed_seek_bar = 6;
+  optional AbsMusicPlayerPanelSegment music_player_panel = 7;
+  repeated PlayerSpeedWidget player_speed_widget = 8;
+  optional PlayerSettingService player_setting_service = 9;
+}
+
 message PlayerFullStoryWidget {
   optional Class class = 1;
   optional Method method = 2;
@@ -302,6 +375,10 @@ message HookInfo {
   repeated PlayerFullStoryWidget player_full_story_widget = 71;
   optional BiliCall bili_call = 72;
   optional Class comment_long_click_new = 73;
+  optional ToolbarService toolbar_service = 502;
+  optional Method set_line_to_all_count = 503;
+  optional SuperMenu super_menu = 504;
+  optional PlaybackSpeed playback_speed = 505;
   optional Method on_operate_click = 74;
   optional Method get_content_string = 75;
   optional Class live_pager_recycler_view = 76;

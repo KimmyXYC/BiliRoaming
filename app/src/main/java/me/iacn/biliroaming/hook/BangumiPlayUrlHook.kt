@@ -185,10 +185,13 @@ class BangumiPlayUrlHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                         )
                         Log.toast("请求解析服务器发生错误: ${e.message}", alsoLog = true)
                     }
-                } else if (isDownload) {
-                    param.result = fixDownloadProto(response)
-                } else if (blockBangumiPageAds) {
-                    param.result = purifyViewInfo(response)
+                } else {
+                    lastSeasonInfo["epid"] = request.callMethod("getEpId")?.toString()
+                    if (isDownload) {
+                        param.result = fixDownloadProto(response)
+                    } else if (blockBangumiPageAds) {
+                        param.result = purifyViewInfo(response)
+                    }
                 }
             }
         }
@@ -261,10 +264,13 @@ class BangumiPlayUrlHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                         )
                         Log.toast("请求解析服务器发生错误: ${e.message}", alsoLog = true)
                     }
-                } else if (isDownload) {
-                    param.result = fixDownloadProto(response)
-                } else if (blockBangumiPageAds) {
-                    param.result = purifyViewInfo(response)
+                } else {
+                    lastSeasonInfo["epid"] = request.callMethod("getEpId")?.toString()
+                    if (isDownload) {
+                        param.result = fixDownloadProto(response)
+                    } else if (blockBangumiPageAds) {
+                        param.result = purifyViewInfo(response)
+                    }
                 }
             }
         }
