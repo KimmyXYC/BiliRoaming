@@ -510,6 +510,11 @@
             android:key="skin_import"
             android:summary="@string/skin_summary"
             android:title="@string/skin_import_title" />
+        <SwitchPreference
+                android:dependency="hidden"
+                android:key="enable_vip_quality"
+                android:summary="@string/enable_vip_quality_summary"
+                android:title="@string/enable_vip_quality_title" />
 
         <Preference
             android:dependency="hidden"
