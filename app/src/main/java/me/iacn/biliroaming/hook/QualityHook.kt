@@ -7,7 +7,7 @@ import me.iacn.biliroaming.utils.sPrefs
 class QualityHook(classLoader: ClassLoader) : BaseHook(classLoader) {
     override fun startHook() {
         if (!sPrefs.getBoolean("enable_vip_quality", false)
-            && sPrefs.getString("cn_server_accessKey", null) == null)
+            && sPrefs.getString("cn_server_accessKey", null) == null
         ) return
         Log.d("startHook: Quality")
 
