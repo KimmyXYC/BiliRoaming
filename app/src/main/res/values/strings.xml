@@ -192,6 +192,7 @@
     <string name="default_playback_speed_title">默认播放速度</string>
     <string name="default_playback_speed_summary">仅应用到视频播放</string>
     <string name="default_playback_speed_hint">例如：1.5，空表示默认</string>
+    <string name="block_dm_feedback_title">屏蔽播放结束时弹幕氛围反馈</string>
     <string name="enable_vip_quality_title">强制启用会员画质</string>
     <string name="enable_vip_quality_summary">使非会员也可以看会员画质 (可能会导致视频播放中发生回退)</string>
     <string name="misc_remove_ads_title">去广告杂项</string>
