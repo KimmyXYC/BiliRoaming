@@ -534,6 +534,7 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
                         ClipData.newPlainText("", instance.accessKey ?: "").let {   
                             activity.getSystemService(ClipboardManager::class.java)
                                 .setPrimaryClip(it)
+                            Log.toast("已复制到剪贴板")
                         }
                     }
                 }
