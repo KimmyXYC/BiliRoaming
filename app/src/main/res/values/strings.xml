@@ -230,9 +230,6 @@
     <string name="block_bangumi_page_ads_summary">屏蔽番剧页面弹窗广告及会员购</string>
     <string name="enable_download_subtitle_title">启用字幕下载功能</string>
     <string name="enable_download_subtitle_summary">需开启解锁番剧限制选项，此功能才会生效。功能入口：播放详情页右上角三点 -> 字幕下载。字幕加载完成后入口才能显示。</string>
-    <string name="subtitle_convert_failed" translatable="false">字幕转换失败，请重试</string>
-    <string name="subtitle_dict_download_failed" translatable="false">转换字典下载失败，请重试</string>
-    <string name="subtitle_dict_latest_url" translatable="false">https://api.github.com/repos/BBSub/ZhConvertDict/releases/latest</string>
     <string name="generate_subtitle_title">生成简中字幕</string>
     <string name="generate_subtitle_summary">根据繁体字幕自动生成简体中文字幕</string>
     <string name="forbid_switch_live_room_title">禁止滑动切换直播间</string>
