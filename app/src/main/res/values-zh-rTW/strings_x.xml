@@ -29,4 +29,6 @@
     <string name="remove_comment_cm_title">移除評論頁頂部推廣橫條</string>
     <string name="enable_download_subtitle_title">啟用字幕下載功能</string>
     <string name="enable_download_subtitle_summary">需開啟解鎖番劇限製選項，此功能才會生效。功能入口：播放詳情頁右上角三點 -> 字幕下載。字幕加載完成後入口才能顯示。</string>
+    <string name="filter_story_title">過濾故事模式影片</string>
+    <string name="filter_story_summary">過濾故事模式（豎屏）下的影片</string>
 </resources>
