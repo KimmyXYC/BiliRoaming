@@ -185,10 +185,10 @@
             android:summary="@string/force_browser_summary"
             android:title="@string/force_browser_title" />
 
-        <Preference
-            android:key="text_fold"
-            android:summary="@string/text_fold_summary"
-            android:title="@string/text_fold_title" />
+        <SwitchPreference
+            android:key="auto_generate_subtitle"
+            android:summary="@string/generate_subtitle_summary"
+            android:title="@string/generate_subtitle_title" />
 
         <SwitchPreference
             android:dependency="main_func"
@@ -196,10 +196,10 @@
             android:summary="@string/enable_download_subtitle_summary"
             android:title="@string/enable_download_subtitle_title" />
 
-        <SwitchPreference
-            android:key="auto_generate_subtitle"
-            android:summary="@string/generate_subtitle_summary"
-            android:title="@string/generate_subtitle_title" />
+        <Preference
+            android:key="text_fold"
+            android:summary="@string/text_fold_summary"
+            android:title="@string/text_fold_title" />
 
         <SwitchPreference
             android:key="forbid_switch_live_room"
@@ -210,15 +210,6 @@
             android:key="forbid_player_long_click_accelerate"
             android:summary="@string/forbid_player_long_click_accelerate_summary"
             android:title="@string/forbid_player_long_click_accelerate_title" />
-
-        <SwitchPreference
-            android:key="disable_live_room_double_click"
-            android:summary="@string/disable_live_room_double_click_summary"
-            android:title="@string/disable_live_room_double_click_title" />
-
-        <SwitchPreference
-            android:key="block_update"
-            android:title="@string/block_update_title" />
 
         <Preference
             android:key="playback_speed_override"
@@ -234,6 +225,15 @@
             android:key="long_press_playback_speed"
             android:summary="@string/long_press_playback_speed_summary"
             android:title="@string/long_press_playback_speed_title" />
+
+        <SwitchPreference
+            android:key="disable_live_room_double_click"
+            android:summary="@string/disable_live_room_double_click_summary"
+            android:title="@string/disable_live_room_double_click_title" />
+
+        <SwitchPreference
+            android:key="block_update"
+            android:title="@string/block_update_title" />
 
         <SwitchPreference
             android:key="save_comment_image"
@@ -339,11 +339,6 @@
             android:key="customize_bottom_bar"
             android:summary="@string/customize_bottom_bar_summary"
             android:title="@string/customize_bottom_bar_title" />
-        <SwitchPreference
-            android:dependency="hidden"
-            android:key="add_channel"
-            android:summary="@string/add_channel_summary"
-            android:title="@string/add_channel_title" />
         <SwitchPreference
             android:dependency="hidden"
             android:key="purify_game"
@@ -501,6 +496,11 @@
             android:title="@string/remove_video_cmd_dms_title" />
         <SwitchPreference
             android:dependency="hidden"
+            android:key="add_channel"
+            android:summary="@string/add_channel_summary"
+            android:title="@string/add_channel_title" />
+        <SwitchPreference
+            android:dependency="hidden"
             android:key="skin"
             android:summary="@string/skin_summary"
             android:title="@string/skin_title" />
@@ -514,6 +514,13 @@
             android:key="enable_vip_quality"
             android:summary="@string/enable_vip_quality_summary"
             android:title="@string/enable_vip_quality_title" />
+
+        <MultiSelectListPreference
+            android:entries="@array/filter_story_entries"
+            android:entryValues="@array/filter_story_values"
+            android:key="filter_story"
+            android:summary="@string/filter_story_summary"
+            android:title="@string/filter_story_title" />
 
         <Preference
             android:dependency="hidden"
