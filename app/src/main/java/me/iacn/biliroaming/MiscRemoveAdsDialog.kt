@@ -52,6 +52,7 @@ class MiscRemoveAdsDialog(val activity: Activity, prefs: SharedPreferences) :
             prefs.edit().apply {
                 putBoolean("remove_search_ads", removeSearchAdsSwitch.isChecked)
                 putBoolean("remove_comment_cm", removeCommentCmSwitch.isChecked)
+                putBoolean("block_dm_feedback", blockDmFeedbackSwitch.isChecked)
             }.apply()
             Log.toast(string(R.string.prefs_save_success_and_reboot))
         }
