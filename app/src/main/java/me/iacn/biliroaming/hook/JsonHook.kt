@@ -15,6 +15,7 @@ class JsonHook(classLoader: ClassLoader) : BaseHook(classLoader) {
 
         val hidden = sPrefs.getBoolean("hidden", false)
         val purifyLivePopups = sPrefs.getStringSet("purify_live_popups", null) ?: setOf()
+        val filterStory = sPrefs.getStringSet("filter_story", null).orEmpty()
         val unlockPlayLimit = sPrefs.getBoolean("play_arc_conf", false)
 
         val tabResponseClass =
@@ -62,6 +63,8 @@ class JsonHook(classLoader: ClassLoader) : BaseHook(classLoader) {
         val biliLiveRoomInfoClass =
             "com.bilibili.bililive.videoliveplayer.net.beans.gateway.roominfo.BiliLiveRoomInfo"
                 .from(mClassLoader)
+        val storyFeedResponseClass = "com.bilibili.video.story.api.StoryFeedResponse"
+            .from(mClassLoader)
         val liveRoomReserveInfoClass =
             "com.bilibili.bililive.room.biz.reverse.bean.LiveRoomReserveInfo".from(mClassLoader)
         val biliLiveRoomUserInfoClass =
@@ -356,6 +359,17 @@ class JsonHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                 dmQoeInfoClass, geminiDmQoeInfoClass -> if (hidden &&
                     sPrefs.getBoolean("block_dm_feedback", false)
                 ) result.callMethod("setShow", false)
+
+                storyFeedResponseClass -> if (hidden && filterStory.isNotEmpty()) {
+                    result.runCatchingOrNull {
+                        getObjectField("data")
+                            ?.getObjectFieldAs<MutableList<Any>>("items")
+                            ?.removeAll { item ->
+                                val goto = item.getObjectFieldAs<String?>("goto").orEmpty()
+                                filterStory.any { goto.contains(it) }
+                            }
+                    }
+                }
 
                 dmAdvertClass -> if (hidden && sPrefs.getBoolean("block_up_rcmd_ads", false))
                     result.setObjectField("ads", null)
