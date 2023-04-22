@@ -1,0 +1,3 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="subtitle_dict_latest_url">https://api.github.com/repos/BBSub/ZhConvertDict/releases/latest</string>
+</resources>
