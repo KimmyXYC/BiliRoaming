@@ -1,0 +1,32 @@
+<resources>
+    <string name="add_channel_title">添加頻道按鈕</string>
+    <string name="add_channel_summary">在底欄添加頻道按鈕（重啟兩次生效）</string>
+    <string name="skin_title">填寫自製主題</string>
+    <string name="skin_import_title">匯入自製主題</string>
+    <string name="skin_summary">重啟後，要等待十幾秒下載資源，然後再重啟（同時開啟時的優先度：匯入＞填寫）</string>
+    <string name="text_fold_title">文本摺疊控制</string>
+    <string name="text_fold_summary">支持自訂評論及動態開始摺疊的文本行數</string>
+    <string name="text_fold_comment_max_lines_title">評論開始摺疊行數</string>
+    <string name="text_fold_dyn_max_lines_title">動態開始摺疊行數</string>
+    <string name="text_fold_dyn_lines_to_all_title">動態全文閱讀觸發行數</string>
+    <string name="text_fold_line">%1$s行</string>
+    <string name="playback_speed_override_title">自訂播放速度列表</string>
+    <string name="playback_speed_override_summary">同時應用到影片及聽影片播放速度列表</string>
+    <string name="playback_speed_override_hint">空格分隔，例如：2 1.5 1，空表示預設</string>
+    <string name="playback_speed_override_invalid">輸入無效！</string>
+    <string name="playback_speed_override_must">必須包含預設倍速1！</string>
+    <string name="playback_speed_override_ok">重啟生效</string>
+    <string name="default_playback_speed_title">默認播放速度</string>
+    <string name="default_playback_speed_summary">僅應用到影片播放</string>
+    <string name="default_playback_speed_hint">例如：1.5，空表示預設</string>
+    <string name="long_press_playback_speed_title">長按播放速度</string>
+    <string name="long_press_playback_speed_summary">自訂播放器長按播放速度</string>
+    <string name="block_dm_feedback_title">屏蔽播放結束時彈幕氛圍回饋</string>
+    <string name="enable_vip_quality_title">強制啟用會員畫質</string>
+    <string name="enable_vip_quality_summary">使非會員也可以看會員畫質 (可能會導致影片播放中發生回退)</string>
+    <string name="misc_remove_ads_title">去廣告雜項</string>
+    <string name="remove_search_ads_title">移除搜尋推廣</string>
+    <string name="remove_comment_cm_title">移除評論頁頂部推廣橫條</string>
+    <string name="enable_download_subtitle_title">啟用字幕下載功能</string>
+    <string name="enable_download_subtitle_summary">需開啟解鎖番劇限製選項，此功能才會生效。功能入口：播放詳情頁右上角三點 -> 字幕下載。字幕加載完成後入口才能顯示。</string>
+</resources>
