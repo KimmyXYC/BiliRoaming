@@ -29,4 +29,6 @@
     <string name="remove_comment_cm_title">移除评论页顶部推广横条</string>
     <string name="enable_download_subtitle_title">启用字幕下载功能</string>
     <string name="enable_download_subtitle_summary">需开启解锁番剧限制选项，此功能才会生效。功能入口：播放详情页右上角三点 -> 字幕下载。字幕加载完成后入口才能显示。</string>
+    <string name="filter_story_title">过滤故事模式视频</string>
+    <string name="filter_story_summary">过滤故事模式（竖屏）下的视频</string>
 </resources>
