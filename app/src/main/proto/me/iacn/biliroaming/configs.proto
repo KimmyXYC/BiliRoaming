@@ -268,6 +268,20 @@ message PlaybackSpeed {
   repeated TripleSpeedService triple_speed_service = 10;
 }
 
+message OrientationProcessor {
+  optional Class class = 1;
+  optional Field activity = 2;
+  optional Method start_gravity_sensor = 3;
+  optional Method switch_orientation = 4;
+  optional Method correct_orientation = 5;
+}
+
+message ScreenLayoutHelper {
+  optional Class class = 1;
+  optional Field activity = 2;
+  optional Method on_state_change = 3;
+}
+
 message PlayerFullStoryWidget {
   optional Class class = 1;
   optional Method method = 2;
@@ -379,6 +393,8 @@ message HookInfo {
   optional Method set_line_to_all_count = 503;
   optional SuperMenu super_menu = 504;
   optional PlaybackSpeed playback_speed = 505;
+  optional OrientationProcessor orientation_processor = 506;
+  optional ScreenLayoutHelper screen_layout_helper = 507;
   optional Method on_operate_click = 74;
   optional Method get_content_string = 75;
   optional Class live_pager_recycler_view = 76;
