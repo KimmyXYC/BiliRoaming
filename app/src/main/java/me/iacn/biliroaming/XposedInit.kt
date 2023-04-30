@@ -106,6 +106,7 @@ class XposedInit : IXposedHookLoadPackage, IXposedHookZygoteInit {
                     startHook(PlaybackSpeedHook(lpparam.classLoader))
                     startHook(TextFoldHook(lpparam.classLoader))
                     startHook(ScreenOrientationHook(lpparam.classLoader))
+                    startHook(LosslessSettingHook(lpparam.classLoader))
                     startHook(DynamicHook(lpparam.classLoader))
                     startHook(ProtoBufHook(lpparam.classLoader))
                     startHook(PlayArcConfHook(lpparam.classLoader))
