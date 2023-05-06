@@ -31,6 +31,9 @@ class ProtoBufHook(classLoader: ClassLoader) : BaseHook(classLoader) {
     // 以下为隐藏功能配置
     private val hidden = sPrefs.getBoolean("hidden", false)
 
+    private val hideFollowButton = hidden && sPrefs.getBoolean("hide_follow_button", false)
+    private val removeRelatePromote = hidden && sPrefs.getBoolean("remove_video_relate_promote", false)
+    private val removeRelateOnlyAv = hidden && sPrefs.getBoolean("remove_video_relate_only_av", false)
     private val removeHonor = hidden && sPrefs.getBoolean("remove_video_honor", false)
     private val removeUgcSeason = hidden && sPrefs.getBoolean("remove_video_UgcSeason", false)
     private val removeCmdDms = hidden && sPrefs.getBoolean("remove_video_cmd_dms", false)
@@ -159,6 +162,10 @@ class ProtoBufHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                     }
                 }
             }
+        }
+        if (hideFollowButton) {
+            "com.bapis.bilibili.main.community.reply.v1.ReplyControl".from(mClassLoader)
+                ?.replaceMethod("getShowFollowBtn") { false }
         }
         if (hidden && blockWordSearch) {
             "com.bapis.bilibili.main.community.reply.v1.Content".hookAfterMethod(
