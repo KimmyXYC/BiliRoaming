@@ -135,7 +135,6 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
         private fun checkCompatibleVersion() {
             val versionCode = getVersionCode(packageName)
             var supportMusicNotificationHook = true
-            val supportAddChannel = versionCode >= 6270000
             var supportCustomizeTab = true
             val supportFullSplash = try {
                 instance.splashInfoClass?.getMethod("getMode") != null
@@ -182,9 +181,6 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             }
             if (!supportTeenagersMode) {
                 disablePreference("teenagers_mode_dialog")
-            }
-            if (!supportAddChannel) {
-                disablePreference("add_channel")
             }
             if (!supportCustomizeTab) {
                 disablePreference("customize_home_tab_title")
