@@ -311,9 +311,6 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             if (!supportTeenagersMode) {
                 disablePreference("teenagers_mode_dialog")
             }
-            if (!supportAddChannel) {
-                disablePreference("add_channel")
-            }
             if (!supportCustomizeTab) {
                 disablePreference("customize_home_tab_title")
                 disablePreference("customize_bottom_bar_title")
