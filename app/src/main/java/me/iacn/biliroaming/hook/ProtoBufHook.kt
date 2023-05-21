@@ -31,6 +31,7 @@ class ProtoBufHook(classLoader: ClassLoader) : BaseHook(classLoader) {
     // 以下为隐藏功能配置
     private val hidden = sPrefs.getBoolean("hidden", false)
 
+    private val blockFollowButton = hidden && sPrefs.getStringSet("block_follow_button", null).orEmpty()
     private val hideFollowButton = hidden && sPrefs.getBoolean("hide_follow_button", false)
     private val removeRelatePromote = hidden && sPrefs.getBoolean("remove_video_relate_promote", false)
     private val removeRelateOnlyAv = hidden && sPrefs.getBoolean("remove_video_relate_only_av", false)
@@ -163,9 +164,17 @@ class ProtoBufHook(classLoader: ClassLoader) : BaseHook(classLoader) {
                 }
             }
         }
-        if (hideFollowButton) {
-            "com.bapis.bilibili.main.community.reply.v1.ReplyControl".from(mClassLoader)
-                ?.replaceMethod("getShowFollowBtn") { false }
+        if (blockFollowButton.isNotEmpty()) {
+            if (blockFollowButton.contains("comment"))
+                "com.bapis.bilibili.main.community.reply.v1.ReplyControl".from(mClassLoader)
+                    ?.replaceMethod("getShowFollowBtn") { false }
+            if (blockFollowButton.contains("dynamic"))
+                arrayOf(
+                    "com.bapis.bilibili.app.dynamic.v2.ModuleAuthor",
+                    "com.bapis.bilibili.app.dynamic.v2.ModuleAuthorForward"
+                ).forEach {
+                    it.from(mClassLoader)?.replaceMethod("getShowFollow") { false }
+                }
         }
         if (hidden && blockWordSearch) {
             "com.bapis.bilibili.main.community.reply.v1.Content".hookAfterMethod(
