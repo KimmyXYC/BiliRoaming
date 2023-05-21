@@ -282,6 +282,11 @@ message ScreenLayoutHelper {
   optional Method on_state_change = 3;
 }
 
+message FavFolderDialog {
+  optional Class class = 1;
+  optional Field check_box = 2;
+}
+
 message PlayerFullStoryWidget {
   optional Class class = 1;
   optional Method method = 2;
@@ -395,6 +400,7 @@ message HookInfo {
   optional PlaybackSpeed playback_speed = 505;
   optional OrientationProcessor orientation_processor = 506;
   optional ScreenLayoutHelper screen_layout_helper = 507;
+  optional FavFolderDialog fav_folder_dialog = 508;
   optional Method on_operate_click = 74;
   optional Method get_content_string = 75;
   optional Class live_pager_recycler_view = 76;
