@@ -22,8 +22,6 @@
     <string name="long_press_playback_speed_title">長按播放速度</string>
     <string name="long_press_playback_speed_summary">自訂播放器長按播放速度</string>
     <string name="block_dm_feedback_title">封鎖播放結束時彈幕氛圍回饋</string>
-    <string name="enable_vip_quality_title">強制啟用會員畫質</string>
-    <string name="enable_vip_quality_summary">使非會員也可以看會員畫質 (可能會導致影片播放中發生回退)</string>
     <string name="misc_remove_ads_title">去廣告雜項</string>
     <string name="remove_search_ads_title">移除搜尋推廣</string>
     <string name="remove_comment_cm_title">移除評論頁頂部推廣橫條</string>
