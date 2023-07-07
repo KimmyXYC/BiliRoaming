@@ -98,11 +98,13 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             findPreference("home_filter")?.onPreferenceClickListener = this
             findPreference("custom_subtitle")?.onPreferenceChangeListener = this
             findPreference("danmaku_filter")?.onPreferenceClickListener = this
-            findPreference("default_speed").onPreferenceClickListener = this
+            // findPreference("default_speed").onPreferenceClickListener = this
             findPreference("customize_accessKey")?.onPreferenceClickListener = this
             findPreference("share_log")?.onPreferenceClickListener = this
             findPreference("skin")?.onPreferenceClickListener = this
             findPreference("skin_import")?.onPreferenceClickListener = this
+            val miscGroup = findPreference("misc") as? PreferenceCategory
+            findPreference("default_speed")?.let { miscGroup?.removePreference(it) }
             findPreference("customize_drawer")?.onPreferenceClickListener = this
             findPreference("custom_link")?.onPreferenceClickListener = this
             findPreference("add_custom_button")?.onPreferenceChangeListener = this

@@ -84,7 +84,7 @@ message PlayerCoreService {
   optional Method get_playback_speed = 2;
   optional Method seek_to = 3;
   optional Method on_seek_complete = 4;
-  optional Method update_speed = 6;
+  optional Method update_speed = 501;
   optional Class seek_complete_listener = 5;
   reserved 6, 7, 8;
 }
