@@ -134,7 +134,7 @@ class XposedInit : IXposedHookLoadPackage, IXposedHookZygoteInit {
                     startHook(VideoQualityHook(lpparam.classLoader))
                     startHook(PublishToFollowingHook(lpparam.classLoader))
                     startHook(UposReplaceHook(lpparam.classLoader))
-                    startHook(SpeedHook(lpparam.classLoader))
+                    // startHook(SpeedHook(lpparam.classLoader))
                 }
 
                 lpparam.processName.endsWith(":web") -> {
