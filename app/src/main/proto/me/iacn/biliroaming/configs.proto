@@ -282,9 +282,31 @@ message ScreenLayoutHelper {
   optional Method on_state_change = 3;
 }
 
+message BiliAccountInfo {
+  optional Class class = 1;
+  optional Method get = 2;
+  optional Method is_effective_vip = 3;
+}
+
+message QualityViewHolder {
+  optional Class class = 1;
+  optional Method bind_online = 2;
+}
+
+message BLKV {
+  optional Class class = 1;
+  optional Method get_by_name = 2;
+  optional Method get_by_file = 3;
+}
+
 message FavFolderDialog {
   optional Class class = 1;
   optional Field check_box = 2;
+}
+
+message IPlayerController {
+  optional Class class = 1;
+  optional Method get_player = 2;
 }
 
 message PlayerFullStoryWidget {
@@ -401,6 +423,10 @@ message HookInfo {
   optional OrientationProcessor orientation_processor = 506;
   optional ScreenLayoutHelper screen_layout_helper = 507;
   optional FavFolderDialog fav_folder_dialog = 508;
+  optional BiliAccountInfo bili_account_info = 509;
+  repeated QualityViewHolder quality_view_holder = 510;
+  optional BLKV blkv = 511;
+  optional IPlayerController player_controller = 512;
   optional Method on_operate_click = 74;
   optional Method get_content_string = 75;
   optional Class live_pager_recycler_view = 76;

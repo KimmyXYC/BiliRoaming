@@ -236,6 +236,10 @@
             android:title="@string/remember_lossless_setting_title" />
 
         <SwitchPreference
+            android:key="force_old_player"
+            android:title="@string/force_old_player_title" />
+
+        <SwitchPreference
             android:key="unlock_screen_orientation"
             android:summary="@string/unlock_screen_orientation_summary"
             android:title="@string/unlock_screen_orientation_title" />
@@ -513,6 +517,12 @@
             android:key="skin_import"
             android:summary="@string/skin_summary"
             android:title="@string/skin_import_title" />
+
+        <SwitchPreference
+            android:dependency="hidden"
+            android:key="trial_vip_quality"
+            android:summary="@string/trial_vip_quality_summary"
+            android:title="@string/trial_vip_quality_title" />
 
         <MultiSelectListPreference
             android:entries="@array/filter_story_entries"
