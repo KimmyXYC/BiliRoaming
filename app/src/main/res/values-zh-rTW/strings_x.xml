@@ -16,11 +16,9 @@
     <string name="playback_speed_override_invalid">輸入無效！</string>
     <string name="playback_speed_override_must">必須包含預設倍速1！</string>
     <string name="playback_speed_override_ok">重啟生效</string>
-    <string name="default_playback_speed_title">預設播放速度</string>
-    <string name="default_playback_speed_summary">僅套用到影片播放</string>
-    <string name="default_playback_speed_hint">例如：1.5，空表示預設</string>
     <string name="long_press_playback_speed_title">長按播放速度</string>
     <string name="long_press_playback_speed_summary">自訂播放器長按播放速度</string>
+    <string name="long_press_playback_speed_hint">例如：1.5，空表示預設</string>
     <string name="block_dm_feedback_title">封鎖播放結束時彈幕氛圍回饋</string>
     <string name="misc_remove_ads_title">去廣告雜項</string>
     <string name="remove_search_ads_title">移除搜尋推廣</string>
