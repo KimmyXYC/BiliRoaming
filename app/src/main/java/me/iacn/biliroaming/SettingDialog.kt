@@ -98,20 +98,17 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             findPreference("home_filter")?.onPreferenceClickListener = this
             findPreference("custom_subtitle")?.onPreferenceChangeListener = this
             findPreference("danmaku_filter")?.onPreferenceClickListener = this
-            // findPreference("default_speed").onPreferenceClickListener = this
+            findPreference("default_speed").onPreferenceClickListener = this
             findPreference("customize_accessKey")?.onPreferenceClickListener = this
             findPreference("share_log")?.onPreferenceClickListener = this
             findPreference("skin")?.onPreferenceClickListener = this
             findPreference("skin_import")?.onPreferenceClickListener = this
-            val miscGroup = findPreference("misc") as? PreferenceCategory
-            findPreference("default_speed")?.let { miscGroup?.removePreference(it) }
             findPreference("customize_drawer")?.onPreferenceClickListener = this
             findPreference("custom_link")?.onPreferenceClickListener = this
             findPreference("add_custom_button")?.onPreferenceChangeListener = this
             findPreference("misc_remove_ads")?.onPreferenceClickListener = this
             findPreference("text_fold")?.onPreferenceClickListener = this
             findPreference("playback_speed_override")?.onPreferenceClickListener = this
-            findPreference("default_playback_speed")?.onPreferenceClickListener = this
             findPreference("long_press_playback_speed")?.onPreferenceClickListener = this
             findPreference("customize_dynamic")?.onPreferenceClickListener = this
             findPreference("filter_search")?.onPreferenceClickListener = this
@@ -948,19 +945,16 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             return true
         }
 
-        private fun onPlaybackSpeedClick(longPress: Boolean): Boolean {
-            val title = if (longPress) {
-                R.string.long_press_playback_speed_title
-            } else R.string.default_playback_speed_title
-            val prefKey = if (longPress) "long_press_playback_speed" else "default_playback_speed"
+        private fun onPlaybackSpeedClick(): Boolean {
             val editText = EditText(activity)
-            editText.setHint(R.string.default_playback_speed_hint)
+            editText.setHint(R.string.long_press_playback_speed_hint)
             editText.setText(
-                sPrefs.getFloat(prefKey, 0F).takeIf { it != 0F }?.toString().orEmpty()
+                sPrefs.getFloat("long_press_playback_speed", 0F)
+                    .takeIf { it != 0F }?.toString().orEmpty()
             )
             editText.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
             AlertDialog.Builder(activity)
-                .setTitle(title)
+                .setTitle(R.string.long_press_playback_speed_title)
                 .setView(editText)
                 .setPositiveButton(android.R.string.ok, null)
                 .setNegativeButton(android.R.string.cancel, null)
@@ -969,7 +963,7 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
                         getButton(Dialog.BUTTON_POSITIVE)?.setOnClickListener {
                             val text = editText.text.toString().trim()
                             if (text.isEmpty()) {
-                                sPrefs.edit().remove(prefKey).apply()
+                                sPrefs.edit().remove("long_press_playback_speed").apply()
                                 Log.toast(
                                     activity.getString(R.string.playback_speed_override_ok),
                                     true
@@ -984,7 +978,7 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
                                     true
                                 )
                             } else {
-                                sPrefs.edit().putFloat(prefKey, speed).apply()
+                                sPrefs.edit().putFloat("long_press_playback_speed", speed).apply()
                                 Log.toast(
                                     activity.getString(R.string.playback_speed_override_ok),
                                     true
@@ -1071,8 +1065,7 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             "text_fold" -> onTextFoldClick()
             "misc_remove_ads" -> run { MiscRemoveAdsDialog(activity, prefs).show(); true }
             "playback_speed_override" -> onPlaybackSpeedOverrideClick()
-            "default_playback_speed" -> onPlaybackSpeedClick(false)
-            "long_press_playback_speed" -> onPlaybackSpeedClick(true)
+            "long_press_playback_speed" -> onPlaybackSpeedClick()
             "customize_dynamic" -> onCustomDynamicClick()
             "danmaku_filter" -> onDanmakuFilterClick()
             "default_speed" -> onDefaultSpeedClick()

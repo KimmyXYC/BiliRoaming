@@ -117,9 +117,7 @@
             android:title="@string/dialog_blur_background_title" />
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:key="misc"
-        android:title="@string/miscellaneous_category">
+    <PreferenceCategory android:title="@string/miscellaneous_category">
         <SwitchPreference
             android:key="teenagers_mode_dialog"
             android:summary="@string/teenagers_mode_dialog_summary"
@@ -223,11 +221,6 @@
             android:key="playback_speed_override"
             android:summary="@string/playback_speed_override_summary"
             android:title="@string/playback_speed_override_title" />
-
-        <Preference
-            android:key="default_playback_speed"
-            android:summary="@string/default_playback_speed_summary"
-            android:title="@string/default_playback_speed_title" />
 
         <Preference
             android:key="long_press_playback_speed"

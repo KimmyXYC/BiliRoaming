@@ -20,25 +20,13 @@ class PlaybackSpeedHook(classLoader: ClassLoader) : BaseHook(classLoader) {
         else v.split(' ').map { it.toFloat() }.toFloatArray()
     }
     private val newSpeedReversedArray = newSpeedArray.reversedArray()
-    private val defaultSpeed = sPrefs.getFloat("default_playback_speed", 0F)
     private val longPressSpeed = sPrefs.getFloat("long_press_playback_speed", 0F)
 
-    private var playbackSpeed = defaultSpeed
+    private var playbackSpeed = 1.0F
     private var speedTextGroupField: Field? = null
 
     @SuppressLint("SetTextI18n")
     override fun startHook() {
-        if (defaultSpeed != 0F) {
-            instance.hookInfo.playbackSpeed.playerSettingService.run {
-                class_.from(mClassLoader)?.hookBeforeMethod(
-                    getFloat.orNull, String::class.java, Float::class.javaPrimitiveType
-                ) { param ->
-                    val key = param.args[0] as String
-                    if (key == "player_key_video_speed")
-                        param.args[1] = defaultSpeed
-                }
-            }
-        }
         if (longPressSpeed != 0F) {
             instance.hookInfo.playbackSpeed.tripleSpeedServiceList.forEach {
                 it.class_.from(mClassLoader)?.hookBeforeMethod(
