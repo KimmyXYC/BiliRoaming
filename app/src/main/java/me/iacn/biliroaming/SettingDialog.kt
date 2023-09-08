@@ -589,14 +589,14 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
             AlertDialog.Builder(activity).run {
                 val view = context.inflateLayout(R.layout.seekbar_dialog)
                 val seekBar = view.findViewById<SeekBar>(R.id.seekBar)
-                seekBar.max = 100
+                seekBar.max = 200
                 val tvHint = view.findViewById<TextView>(R.id.tvHint)
                 seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
                     @SuppressLint("SetTextI18n")
                     override fun onProgressChanged(
                         seekBar: SeekBar?, progress: Int, fromUser: Boolean
                     ) {
-                        tvHint.text = "${progress * 10}%"
+                        tvHint.text = "${progress * 5}%"
                     }
 
                     override fun onStartTrackingTouch(seekBar: SeekBar?) {}
@@ -604,12 +604,12 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
                 })
                 val current = prefs.getInt("default_speed", 100)
                 @SuppressLint("SetTextI18n")
-                tvHint.text = "${current * 10}%"
-                seekBar.progress = current / 10
+                tvHint.text = "${current * 5}%"
+                seekBar.progress = current / 5
                 setTitle(R.string.default_speed_title)
                 setNegativeButton(android.R.string.cancel, null)
                 setPositiveButton(android.R.string.ok) { _, _ ->
-                    prefs.edit().putInt("default_speed", seekBar.progress * 10).apply()
+                    prefs.edit().putInt("default_speed", seekBar.progress * 5).apply()
                 }
                 setView(view)
                 show()
