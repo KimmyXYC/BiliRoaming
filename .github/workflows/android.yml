@@ -38,6 +38,7 @@ jobs:
           restore-keys: ${{ runner.os }}
       - name: Build with Gradle
         run: |
+          which cmake
           sudo rm -rf $ANDROID_HOME/cmake
           echo 'org.gradle.caching=true' >> gradle.properties
           echo 'org.gradle.parallel=true' >> gradle.properties
